@@ -3,25 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Menu, X, ChevronDown, Search } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { BLOGS } from "@/src/lib/blog";
 
 type NavLink = {
   label: string;
   href: string;
-  dropdown?: {
-    label: string;
-    href: string;
-  }[];
 };
-
-const baseNavLinks: NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact" },
-];
 
 function slugifyCategory(value: string) {
   return value.toLowerCase().trim().replace(/\s+/g, "-");
@@ -32,7 +21,6 @@ export default function Navbar() {
   const router = useRouter();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   const [desktopSearch, setDesktopSearch] = useState("");
   const [mobileSearch, setMobileSearch] = useState("");
@@ -42,28 +30,23 @@ export default function Navbar() {
   const desktopSearchRef = useRef<HTMLDivElement | null>(null);
   const mobileSearchRef = useRef<HTMLDivElement | null>(null);
 
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(
-      new Set(BLOGS.map((blog) => blog.category).filter(Boolean))
-    );
-
-    return uniqueCategories.map((category) => ({
-      label: category,
-      href: `/categories/${slugifyCategory(category)}`,
-    }));
-  }, []);
-
-  const navLinks: NavLink[] = [
-    baseNavLinks[0],
-    baseNavLinks[1],
-    {
-      label: "Categories",
-      href: "#",
-      dropdown: categories,
-    },
-    baseNavLinks[2],
-    baseNavLinks[3],
-  ];
+  const navLinks: NavLink[] = useMemo(
+    () => [
+      { label: "Politics", href: `/categories/${slugifyCategory("Politics")}` },
+      { label: "Finance", href: `/categories/${slugifyCategory("Finance")}` },
+      { label: "Science", href: `/categories/${slugifyCategory("Science")}` },
+      { label: "Sports", href: `/categories/${slugifyCategory("Sports")}` },
+      {
+        label: "Technology",
+        href: `/categories/${slugifyCategory("Technology")}`,
+      },
+      {
+        label: "Entertainment",
+        href: `/categories/${slugifyCategory("Entertainment")}`,
+      },
+    ],
+    []
+  );
 
   const filteredDesktopBlogs = useMemo(() => {
     const query = desktopSearch.trim().toLowerCase();
@@ -143,14 +126,11 @@ export default function Navbar() {
     setMobileSearchOpen(false);
   };
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) => pathname.startsWith(href);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+      <div className="mx-auto flex max-w-360 items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center">
           <Image
             src="/images/logo.png"
@@ -163,43 +143,19 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex">
-          {navLinks.map((link) =>
-            link.dropdown ? (
-              <div key={link.label} className="group relative">
-                <button
-                  type="button"
-                  className="flex items-center gap-1 text-[15px] font-medium text-[#0B1220] transition hover:text-[#FF5A14]"
-                >
-                  <span>{link.label}</span>
-                  <ChevronDown size={16} />
-                </button>
-
-                <div className="invisible absolute left-0 top-full mt-3 w-60 translate-y-2 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                  {link.dropdown.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className="block rounded-xl px-4 py-3 text-sm font-medium text-[#0B1220] transition hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`text-[15px] font-medium transition ${
-                  isActive(link.href)
-                    ? "text-[#FF5A14]"
-                    : "text-[#0B1220] hover:text-[#FF5A14]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            )
-          )}
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className={`text-[15px] font-medium transition ${
+                isActive(link.href)
+                  ? "text-[#FF5A14]"
+                  : "text-[#0B1220] hover:text-[#FF5A14]"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         <div
@@ -352,59 +308,20 @@ export default function Navbar() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            {navLinks.map((link) =>
-              link.dropdown ? (
-                <div key={link.label} className="rounded-xl">
-                  <button
-                    onClick={() => setMobileDropdownOpen((prev) => !prev)}
-                    className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium text-[#0B1220] transition hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
-                    type="button"
-                  >
-                    {link.label}
-                    <ChevronDown
-                      size={16}
-                      className={`transition ${
-                        mobileDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      mobileDropdownOpen
-                        ? "max-h-[400px] opacity-100"
-                        : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="ml-3 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-3">
-                      {link.dropdown.map((item) => (
-                        <Link
-                          key={item.label}
-                          href={item.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="rounded-lg px-3 py-2 text-sm text-[#0B1220] transition hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-xl px-4 py-3 text-[15px] font-medium transition ${
-                    isActive(link.href)
-                      ? "bg-[#FFF4EE] text-[#FF5A14]"
-                      : "text-[#0B1220] hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`rounded-xl px-4 py-3 text-[15px] font-medium transition ${
+                  isActive(link.href)
+                    ? "bg-[#FFF4EE] text-[#FF5A14]"
+                    : "text-[#0B1220] hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
       </div>

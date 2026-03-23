@@ -3030,7 +3030,7 @@ export const BLOGS: BlogPost[] = [
     "A practical look at how transfer windows work, why deadlines matter, and how clubs balance urgency with long-term planning.",
   heroImage:
     "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 20, 2026",
   publishISO: "2026-03-20T00:00:00.000Z",
   readingTime: "8 min",
@@ -3054,7 +3054,7 @@ export const BLOGS: BlogPost[] = [
         },
         {
           type: "p",
-          text: "For fans, transfer season often feels chaotic. For clubs, it is a business and sporting decision happening under deadlines, media pressure, and competitive risk.",
+          text: "For fans, transfer season often feels chaotic. For clubs, it is a business and Sportsing decision happening under deadlines, media pressure, and competitive risk.",
         },
       ],
     },
@@ -3074,7 +3074,7 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "why-home-advantage-matters"],
+  relatedSlugs: ["Sportss-science-and-performance", "why-home-advantage-matters"],
 },
 
 // =========================================================
@@ -3087,7 +3087,7 @@ export const BLOGS: BlogPost[] = [
     "Why composure, rhythm, and decision-making often separate top players from everyone else.",
   heroImage:
     "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 19, 2026",
   publishISO: "2026-03-19T00:00:00.000Z",
   readingTime: "7 min",
@@ -3097,7 +3097,7 @@ export const BLOGS: BlogPost[] = [
   seoTitle: "The Mental Game of Tennis | Topicler",
   seoDescription:
     "Explore how focus, composure, and pressure management shape tennis performance.",
-  keywords: ["tennis", "sports psychology", "mental toughness"],
+  keywords: ["tennis", "Sportss psychology", "mental toughness"],
   ogImage:
     "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3131,7 +3131,7 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "why-home-advantage-matters"],
+  relatedSlugs: ["Sportss-science-and-performance", "why-home-advantage-matters"],
 },
 
 // =========================================================
@@ -3144,7 +3144,7 @@ export const BLOGS: BlogPost[] = [
     "How tires, timing, pit stops, and race management shape F1 results far beyond pure speed.",
   heroImage:
     "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 18, 2026",
   publishISO: "2026-03-18T00:00:00.000Z",
   readingTime: "8 min",
@@ -3154,7 +3154,7 @@ export const BLOGS: BlogPost[] = [
   seoTitle: "Formula 1 Strategy Basics | Topicler",
   seoDescription:
     "Understand how race strategy works in Formula 1 beyond just driving fast.",
-  keywords: ["formula 1", "f1 strategy", "motorsport"],
+  keywords: ["formula 1", "f1 strategy", "motorSports"],
   ogImage:
     "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3188,30 +3188,30 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "why-home-advantage-matters"],
+  relatedSlugs: ["Sportss-science-and-performance", "why-home-advantage-matters"],
 },
 
 // =========================================================
-// 64) COMBAT SPORTS PREPARATION
+// 64) COMBAT SportsS PREPARATION
 // =========================================================
 {
-  slug: "combat-sports-preparation",
+  slug: "combat-Sportss-preparation",
   title: "How Fighters Prepare for Competition",
   subtitle:
     "A practical look at training camps, weight management, recovery, and fight preparation.",
   heroImage:
     "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 17, 2026",
   publishISO: "2026-03-17T00:00:00.000Z",
   readingTime: "8 min",
   guideLabel: "This guide",
   guideValue: "Training + preparation",
-  canonicalPath: "/blog/combat-sports-preparation",
+  canonicalPath: "/blog/combat-Sportss-preparation",
   seoTitle: "How Fighters Prepare for Competition | Topicler",
   seoDescription:
     "Learn how fighters prepare physically and mentally for competition.",
-  keywords: ["mma", "boxing", "fight camp", "combat sports"],
+  keywords: ["mma", "boxing", "fight camp", "combat Sportss"],
   ogImage:
     "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3245,7 +3245,7 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "sleep-and-recovery-explained"],
+  relatedSlugs: ["Sportss-science-and-performance", "sleep-and-recovery-explained"],
 },
 
 // =========================================================
@@ -3258,7 +3258,7 @@ export const BLOGS: BlogPost[] = [
     "How routine, decision-making, tempo, and course management shape better golf over time.",
   heroImage:
     "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 16, 2026",
   publishISO: "2026-03-16T00:00:00.000Z",
   readingTime: "7 min",
@@ -3268,7 +3268,7 @@ export const BLOGS: BlogPost[] = [
   seoTitle: "Golf Consistency Explained | Topicler",
   seoDescription:
     "Learn why routine and decision-making are central to consistent golf.",
-  keywords: ["golf", "golf swing", "sports performance"],
+  keywords: ["golf", "golf swing", "Sportss performance"],
   ogImage:
     "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3302,7 +3302,7 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "building-better-habits"],
+  relatedSlugs: ["Sportss-science-and-performance", "building-better-habits"],
 },
 
 // =========================================================
@@ -3315,7 +3315,7 @@ export const BLOGS: BlogPost[] = [
     "From batting collapses to death overs, small phases often decide the entire result.",
   heroImage:
     "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sportss",
   publishDate: "March 15, 2026",
   publishISO: "2026-03-15T00:00:00.000Z",
   readingTime: "7 min",
@@ -3325,7 +3325,7 @@ export const BLOGS: BlogPost[] = [
   seoTitle: "Cricket Pressure Moments Explained | Topicler",
   seoDescription:
     "Understand how key phases and pressure moments decide cricket matches.",
-  keywords: ["cricket", "match pressure", "sports analysis"],
+  keywords: ["cricket", "match pressure", "Sportss analysis"],
   ogImage:
     "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3359,7 +3359,7 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "tennis-mental-game"],
+  relatedSlugs: ["Sportss-science-and-performance", "tennis-mental-game"],
 },
 
 // =========================================================
@@ -3367,22 +3367,22 @@ export const BLOGS: BlogPost[] = [
 // =========================================================
 {
   slug: "why-home-advantage-matters",
-  title: "Why Home Advantage Matters in Sport",
+  title: "Why Home Advantage Matters in Sports",
   subtitle:
     "Crowd energy, familiarity, travel fatigue, and psychology all shape home performance.",
   heroImage:
     "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 14, 2026",
   publishISO: "2026-03-14T00:00:00.000Z",
   readingTime: "6 min",
   guideLabel: "This guide",
   guideValue: "Clear match context",
   canonicalPath: "/blog/why-home-advantage-matters",
-  seoTitle: "Why Home Advantage Matters in Sport | Topicler",
+  seoTitle: "Why Home Advantage Matters in Sports | Topicler",
   seoDescription:
     "Explore why teams often perform better at home and what factors drive that edge.",
-  keywords: ["home advantage", "sports performance", "crowd effect"],
+  keywords: ["home advantage", "Sportss performance", "crowd effect"],
   ogImage:
     "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3416,30 +3416,30 @@ export const BLOGS: BlogPost[] = [
       ],
     },
   ],
-  relatedSlugs: ["sports-science-and-performance", "football-transfer-window-explained"],
+  relatedSlugs: ["Sportss-science-and-performance", "football-transfer-window-explained"],
 },
 
 // =========================================================
-// 68) SPORTS SCIENCE
+// 68) SportsS SCIENCE
 // =========================================================
 {
-  slug: "sports-science-and-performance",
-  title: "Sports Science and Performance",
+  slug: "Sportss-science-and-performance",
+  title: "Sportss Science and Performance",
   subtitle:
     "How training load, recovery, biomechanics, and monitoring improve athletic output.",
   heroImage:
     "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 13, 2026",
   publishISO: "2026-03-13T00:00:00.000Z",
   readingTime: "8 min",
   guideLabel: "This guide",
   guideValue: "Performance basics",
-  canonicalPath: "/blog/sports-science-and-performance",
-  seoTitle: "Sports Science and Performance | Topicler",
+  canonicalPath: "/blog/Sportss-science-and-performance",
+  seoTitle: "Sportss Science and Performance | Topicler",
   seoDescription:
-    "Understand how sports science improves athletic performance and recovery.",
-  keywords: ["sports science", "training", "recovery", "performance"],
+    "Understand how Sportss science improves athletic performance and recovery.",
+  keywords: ["Sportss science", "training", "recovery", "performance"],
   ogImage:
     "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2400&auto=format&fit=crop",
   sections: [
@@ -3449,7 +3449,7 @@ export const BLOGS: BlogPost[] = [
       content: [
         {
           type: "p",
-          text: "Sports science helps coaches and athletes make better decisions about training, fatigue, recovery, and performance. It turns guesswork into a more measurable process.",
+          text: "Sportss science helps coaches and athletes make better decisions about training, fatigue, recovery, and performance. It turns guesswork into a more measurable process.",
         },
         {
           type: "p",
@@ -3480,23 +3480,23 @@ export const BLOGS: BlogPost[] = [
 // 69) TEAM CHEMISTRY
 // =========================================================
 {
-  slug: "team-chemistry-in-sport",
+  slug: "team-chemistry-in-Sports",
   title: "Why Team Chemistry Matters More Than People Think",
   subtitle:
     "Talent helps, but communication, trust, and role clarity often decide how well teams actually perform.",
   heroImage:
     "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2400&auto=format&fit=crop",
-  category: "Sport",
+  category: "Sports",
   publishDate: "March 12, 2026",
   publishISO: "2026-03-12T00:00:00.000Z",
   readingTime: "7 min",
   guideLabel: "This guide",
   guideValue: "Team performance context",
-  canonicalPath: "/blog/team-chemistry-in-sport",
-  seoTitle: "Why Team Chemistry Matters in Sport | Topicler",
+  canonicalPath: "/blog/team-chemistry-in-Sports",
+  seoTitle: "Why Team Chemistry Matters in Sports | Topicler",
   seoDescription:
-    "Learn why team chemistry plays a major role in sports performance.",
-  keywords: ["team chemistry", "sports teams", "performance"],
+    "Learn why team chemistry plays a major role in Sportss performance.",
+  keywords: ["team chemistry", "Sportss teams", "performance"],
   ogImage:
     "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2400&auto=format&fit=crop",
   sections: [

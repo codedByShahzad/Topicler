@@ -154,7 +154,7 @@ const CategorySections = () => {
     .filter((item) => item.posts.length > 0);
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-6 lg:px-8">
+    <section className="mx-auto max-w-360 px-5 py-6 lg:px-8">
       <div className="space-y-14">
         {categoryData.map((item, index) => (
           <CategoryBlock

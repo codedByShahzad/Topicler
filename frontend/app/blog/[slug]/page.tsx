@@ -195,7 +195,7 @@ export default async function BlogDetailPage({
     <div className="relative min-h-[92vh] bg-gray-50">
       <GridBackground />
 
-      <div className="max-w-[100rem] mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-10">
+      <div className="max-w-360 mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-10">
         {/* HERO */}
         <div className="rounded-3xl overflow-hidden border border-slate-200 bg-white/70 shadow-sm">
           <div className="relative h-[280px] sm:h-[340px] md:h-[480px]">

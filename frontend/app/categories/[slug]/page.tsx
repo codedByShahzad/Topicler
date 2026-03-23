@@ -63,7 +63,7 @@ export default async function CategoryPage({ params }: PageProps) {
       
       {/* Header */}
       <section className="border-b border-slate-200 bg-[#fff7f3]">
-        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-360 px-5 py-16 lg:px-8 lg:py-20">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#FF5A14]">
             Category
           </p>
@@ -79,7 +79,7 @@ export default async function CategoryPage({ params }: PageProps) {
       </section>
 
       {/* Blog Grid */}
-      <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-16">
+      <section className="mx-auto max-w-360 px-5 py-14 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {blogs.map((blog, index) => (
             <BlogCard

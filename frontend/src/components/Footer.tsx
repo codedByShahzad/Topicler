@@ -40,7 +40,7 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className="border-t border-slate-200 bg-[#fffaf7]">
-      <div className="mx-auto max-w-[100rem] px-5 py-14 lg:px-8">
+      <div className="mx-auto max-w-360 px-5 py-14 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.9fr]">
           {/* Brand */}
           <div>

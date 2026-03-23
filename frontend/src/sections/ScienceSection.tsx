@@ -15,7 +15,7 @@ const ScienceSection = () => {
   if (!featured || middlePosts.length < 2 || sidePosts.length < 5) return null;
 
   return (
-    <section className="mx-auto max-w-7xl border-t border-slate-200 px-5 py-8 lg:px-8">
+    <section className="mx-auto max-w-360 border-t border-slate-200 px-5 py-8 lg:px-8">
       <div className="mb-6 flex items-center gap-4">
         <h2 className="text-3xl font-bold tracking-tight text-[#0B1220] md:text-4xl">
           Science

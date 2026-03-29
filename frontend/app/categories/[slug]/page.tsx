@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { BLOGS } from "@/src/lib/blog";
 import BlogCard from "@/src/components/BlogCard";
 
@@ -60,26 +63,87 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white">
-      
-      {/* Header */}
-      <section className="border-b border-slate-200 bg-[#fff7f3]">
-        <div className="mx-auto max-w-360 px-5 py-16 lg:px-8 lg:py-20">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#FF5A14]">
+   {/* Header */}
+<section className="relative overflow-hidden border-b border-slate-200 bg-[#fcfcfd]">
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,90,20,0.10),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.04),transparent_24%)]" />
+
+  <div className="relative mx-auto max-w-[1440px] px-5 py-14 lg:px-8 lg:py-10">
+    <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div className="max-w-3xl">
+        <div className="mb-5 flex items-center gap-3">
+          <Image
+            src="/images/sectionicon.svg"
+            alt="section icon"
+            width={24}
+            height={24}
+          />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FF5A14]">
             Category
-          </p>
-
-          <h1 className="text-4xl font-bold tracking-tight text-[#0B1220] md:text-5xl">
-            {categoryName}
-          </h1>
-
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-            Explore all articles in the {categoryName} category.
-          </p>
+          </span>
         </div>
-      </section>
 
+        <div className="mb-5 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+          <Link href="/" className="transition hover:text-[#0B1220]">
+            Home
+          </Link>
+          <span>/</span>
+          <Link
+            href="/categories"
+            className="transition hover:text-[#0B1220]"
+          >
+            Categories
+          </Link>
+          <span>/</span>
+          <span className="font-medium text-[#0B1220]">{categoryName}</span>
+        </div>
+
+        <h1 className="text-4xl font-bold tracking-tight text-[#0B1220] md:text-5xl lg:text-6xl lg:leading-[1.02]">
+          {categoryName}
+        </h1>
+
+        <p className="mt-5 max-w-2xl text-[16px] leading-8 text-slate-600 md:text-[17px]">
+          Explore all articles, ideas, and practical insights in the{" "}
+          {categoryName} category on Topicler.
+        </p>
+
+        {/* 📊 Stats */}
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 rounded-full bg-white px-8 py-2 shadow-md border border-slate-200">
+            <span className="text-lg font-bold text-[#FF5A14]">
+              {blogs.length}
+            </span>
+            <span className="text-sm text-slate-600">
+              article{blogs.length === 1 ? "" : "s"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4">
+        <Link
+          href="/blog"
+          className="group inline-flex items-center justify-center gap-2 rounded-full border border-[#FF5A14]/30 bg-[#FF5A14]/5 px-6 py-3 text-sm font-semibold text-[#FF5A14] transition-all duration-300 hover:bg-[#FF5A14] hover:text-white"
+        >
+          Browse All Blogs
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
       {/* Blog Grid */}
-      <section className="mx-auto max-w-360 px-5 py-14 lg:px-8 lg:py-16">
+      <section className="mx-auto max-w-[1440px] px-5 py-12 lg:px-8 lg:py-16">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Latest in {categoryName}
+            </p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#0B1220] md:text-3xl">
+              Articles and insights
+            </h2>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           {blogs.map((blog, index) => (
             <BlogCard
@@ -91,7 +155,7 @@ export default async function CategoryPage({ params }: PageProps) {
               category={blog.category}
               publishDate={blog.publishDate}
               readingTime={blog.readingTime}
-              priority={index < 3} // 🔥 optimize LCP
+              priority={index < 3}
             />
           ))}
         </div>

@@ -117,7 +117,7 @@ function GridBackground() {
 function SectionRenderer({ section }: { section: BlogSection }) {
   return (
     <section id={section.id} className="scroll-mt-24">
-      <h2 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight">
+      <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
         {section.title}
       </h2>
 
@@ -125,7 +125,7 @@ function SectionRenderer({ section }: { section: BlogSection }) {
         {section.content.map((block: BlogBlock, idx: number) => {
           if (block.type === "p") {
             return (
-              <p key={idx} className="text-slate-600 leading-relaxed">
+              <p key={idx} className="leading-relaxed text-slate-600">
                 {block.text}
               </p>
             );
@@ -135,7 +135,7 @@ function SectionRenderer({ section }: { section: BlogSection }) {
             return (
               <h3
                 key={idx}
-                className="text-base md:text-lg font-semibold text-slate-900"
+                className="text-base font-semibold text-slate-900 md:text-lg"
               >
                 {block.text}
               </h3>
@@ -144,7 +144,7 @@ function SectionRenderer({ section }: { section: BlogSection }) {
 
           if (block.type === "ul") {
             return (
-              <ul key={idx} className="list-disc pl-5 space-y-2 text-slate-600">
+              <ul key={idx} className="list-disc space-y-2 pl-5 text-slate-600">
                 {block.items.map((it: string, i: number) => (
                   <li key={i}>{it}</li>
                 ))}
@@ -195,9 +195,9 @@ export default async function BlogDetailPage({
     <div className="relative min-h-[92vh] bg-gray-50">
       <GridBackground />
 
-      <div className="max-w-360 mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-10">
+      <div className="mx-auto max-w-360 px-3 py-4 sm:px-4 md:px-6 md:py-10">
         {/* HERO */}
-        <div className="rounded-3xl overflow-hidden border border-slate-200 bg-white/70 shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white/70 shadow-sm">
           <div className="relative h-[280px] sm:h-[340px] md:h-[480px]">
             <Image
               src={blog.heroImage}
@@ -208,34 +208,44 @@ export default async function BlogDetailPage({
             />
 
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute inset-0 bg-black/10" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
-              <div className="absolute left-0 right-0 bottom-0 h-[58%] bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-              <div className="absolute left-0 right-0 bottom-0 h-[46%] backdrop-blur-[2px]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020617]/85 via-[#020617]/35 to-transparent" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08)_0%,rgba(2,6,23,0.16)_35%,rgba(2,6,23,0.72)_100%)]" />
+              <div className="absolute bottom-0 left-0 right-0 h-[55%] bg-gradient-to-t from-[#020617]/90 via-[#020617]/45 to-transparent" />
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-xs text-slate-700">
-                <Folder className="w-4 h-4 text-[#FF5A14]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/90 px-3 py-1 text-xs text-slate-700 backdrop-blur">
+                <Folder className="h-4 w-4 text-[#FF5A14]" />
                 {blog.category}
               </div>
 
-              <h1 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
+              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
                 {blog.title}
               </h1>
 
-              <p className="mt-2 text-white/85 max-w-3xl leading-relaxed text-sm sm:text-base">
+              <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/85 sm:text-base">
                 {blog.subtitle}
               </p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-white/80 sm:text-sm">
+                <span className="inline-flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-[#FFB38F]" />
+                  {blog.publishDate}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-[#FFB38F]" />
+                  {blog.readingTime}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* CONTENT */}
         <section className="mt-6 md:mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <div className="rounded-3xl border border-slate-200 bg-white/80 shadow-sm p-5 sm:p-6 md:p-8">
+              <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm sm:p-6 md:p-8">
                 <div className="space-y-10">
                   {blog.sections.map((s) => (
                     <SectionRenderer key={s.id} section={s} />
@@ -244,19 +254,19 @@ export default async function BlogDetailPage({
               </div>
             </div>
 
-            <aside className="hidden lg:block lg:col-span-4 self-start lg:sticky lg:top-24">
-              <div className="rounded-3xl border border-slate-200 bg-white/80 shadow-sm p-6">
-                <h3 className="text-sm font-semibold text-slate-900">
-                  Table of contents
-                </h3>
-
-                <TocClient sections={tocSections} />
+            <aside className="hidden self-start lg:sticky lg:top-24 lg:col-span-4 lg:block">
+              <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm">
+                <TocClient
+                  sections={tocSections}
+                  publishDate={blog.publishDate}
+                  readingTime={blog.readingTime}
+                />
+                
 
               </div>
             </aside>
           </div>
         </section>
-
 
         {/* RELATED POSTS */}
         {related.length > 0 && (
@@ -271,42 +281,47 @@ export default async function BlogDetailPage({
                 className="group inline-flex items-center gap-2 rounded-full bg-[#FF5A14] px-4 py-2 text-sm font-medium text-white hover:bg-[#e14e12] hover:shadow-md"
               >
                 <span>View all</span>
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
             </div>
 
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
                 <Link
                   key={p.slug}
                   href={`/blog/${p.slug}`}
-                  className="group rounded-3xl border border-slate-200 bg-white/80 shadow-sm overflow-hidden hover:border-[#FF5A14]/30 hover:bg-[#FFF4EE] transition"
+                  className="group overflow-hidden rounded-3xl border border-slate-200 bg-white/80 shadow-sm transition hover:border-[#FF5A14]/30 hover:bg-[#FFF4EE]"
                 >
                   <div className="relative h-40">
-                    <Image src={p.heroImage} alt={p.title} fill className="object-cover" />
+                    <Image
+                      src={p.heroImage}
+                      alt={p.title}
+                      fill
+                      className="object-cover"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
                     <div className="absolute bottom-3 left-3">
-                      <span className="px-2.5 py-1 rounded-full text-xs bg-white/90 border border-slate-200 text-slate-700">
+                      <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-xs text-slate-700">
                         {p.category}
                       </span>
                     </div>
                   </div>
 
                   <div className="p-5">
-                    <h4 className="text-base font-semibold text-slate-900 group-hover:text-[#FF5A14] transition line-clamp-2">
+                    <h4 className="line-clamp-2 text-base font-semibold text-slate-900 transition group-hover:text-[#FF5A14]">
                       {p.title}
                     </h4>
-                    <p className="mt-2 text-sm text-slate-600 line-clamp-2">
+                    <p className="mt-2 line-clamp-2 text-sm text-slate-600">
                       {p.subtitle}
                     </p>
 
                     <div className="mt-4 flex items-center gap-4 text-xs text-slate-500">
                       <span className="inline-flex items-center gap-1">
-                        <CalendarDays className="w-4 h-4" />
+                        <CalendarDays className="h-4 w-4" />
                         {p.publishDate}
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="h-4 w-4" />
                         {p.readingTime}
                       </span>
                     </div>
@@ -316,7 +331,6 @@ export default async function BlogDetailPage({
             </div>
           </section>
         )}
-
       </div>
     </div>
   );

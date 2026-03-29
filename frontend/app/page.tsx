@@ -1,18 +1,12 @@
 import CategorySections from "@/src/sections/CategorySections";
 import HeroSection from "../src/sections/HeroSection";
-import PoliticsSection from "@/src/sections/PoliticsSection";
-import FinanceSection from "@/src/sections/FinanceSection";
-import ScienceSection from "@/src/sections/ScienceSection";
-import SportsSection from "@/src/sections/SportsSection";
+import FeaturedCategoriesSection from "@/src/sections/FeaturedCategoriesSection";
 
 const Home = () => {
   return (
     <main className="bg-white">
       <HeroSection />
-      <PoliticsSection />
-      <FinanceSection />
-      <ScienceSection />
-      <SportsSection />
+      <FeaturedCategoriesSection />
     </main>
   );
 };

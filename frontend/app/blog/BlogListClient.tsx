@@ -47,10 +47,10 @@ export default function BlogListClient() {
   }, [searchQuery]);
 
   return (
-    <div className="relative min-h-[92vh] overflow-hidden bg-white px-4 py-10 md:px-6 md:py-16">
+    <div className="relative min-h-[92vh] overflow-hidden bg-white ">
       <GridBackground />
 
-      <div className="mx-auto max-w-360 px-5 pb-6 lg:px-8">
+      <div className="mx-auto max-w-360 px-5 py-6 lg:px-8">
         {/* SIMPLE HEADER */}
         <section className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>

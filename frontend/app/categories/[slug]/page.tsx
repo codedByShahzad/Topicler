@@ -67,7 +67,7 @@ export default async function CategoryPage({ params }: PageProps) {
 <section className="relative overflow-hidden border-b border-slate-200 bg-[#fcfcfd]">
   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,90,20,0.10),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.04),transparent_24%)]" />
 
-  <div className="relative mx-auto max-w-[1440px] px-5 py-14 lg:px-8 lg:py-10">
+  <div className="relative mx-auto max-w-360 px-5 py-6 lg:px-8">
     <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
       <div className="max-w-3xl">
         <div className="mb-5 flex items-center gap-3">

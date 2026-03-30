@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "Topicler",
     images: [
       {
-        url: "/images/ogImage.jpg",
+        url: "/images/ogImage.png",
         width: 1200,
         height: 630,
         alt: "Topicler Categories Page",

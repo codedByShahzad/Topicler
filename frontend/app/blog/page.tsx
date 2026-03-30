@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/images/ogImage.jpg",
+        url: "/images/ogImage.png",
         width: 1200,
         height: 630,
         alt: "Topicler Blog",

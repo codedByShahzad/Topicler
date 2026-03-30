@@ -151,7 +151,7 @@ export async function generateMetadata({
   const description = getCategoryDescription(categoryName);
   const keywords = getCategoryKeywords(categoryName);
   const categoryUrl = `https://topickler.netlify.app/categories/${slug}`;
-  const ogImage = blogs[0]?.heroImage || "/images/ogImage.jpg";
+  const ogImage = blogs[0]?.heroImage || "/images/ogImage.png";
 
   return {
     metadataBase: new URL("https://topickler.netlify.app"),

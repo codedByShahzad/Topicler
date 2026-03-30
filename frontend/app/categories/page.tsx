@@ -1,7 +1,73 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, FolderOpen, Sparkles, Activity, CalendarDays } from "lucide-react";
+import {
+  ArrowRight,
+  FolderOpen,
+  Sparkles,
+  Activity,
+  CalendarDays,
+} from "lucide-react";
 import { BLOGS } from "@/src/lib/blog";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://topickler.netlify.app"),
+  title:
+    "Blog Categories | Topicler",
+  description:
+    "Explore all Topicler categories including Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
+  keywords: [
+    "Topicler categories",
+    "blog categories",
+    "politics blogs",
+    "finance blogs",
+    "real estate blogs",
+    "technology blogs",
+    "plumbing blogs",
+    "digital marketing blogs",
+    "health blogs",
+    "home improvement blogs",
+  ],
+  alternates: {
+    canonical: "/categories",
+  },
+  openGraph: {
+    title: "Blog Categories | Topicler",
+    description:
+      "Browse all Topicler categories and discover expert articles across Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
+    url: "https://topickler.netlify.app/categories",
+    siteName: "Topicler",
+    images: [
+      {
+        url: "/images/ogImage.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Topicler Categories Page",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog Categories | Topicler",
+    description:
+      "Explore all blog categories on Topicler, from Politics and Finance to Technology, Plumbing, and more.",
+    images: ["/images/ogImage.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  category: "blog",
+};
 
 type BlogPost = (typeof BLOGS)[number];
 
@@ -270,7 +336,6 @@ const CategoryCard = ({
   );
 };
 
-
 export default function CategoriesPage() {
   const categories = getCategoryGroups();
 
@@ -308,8 +373,6 @@ export default function CategoriesPage() {
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       </section>
-
-
 
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {categories.map((item) => (

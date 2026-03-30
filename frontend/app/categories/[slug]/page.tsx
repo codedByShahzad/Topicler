@@ -20,6 +20,105 @@ function getBlogsByCategorySlug(slug: string) {
   return BLOGS.filter((blog) => slugifyCategory(blog.category) === slug);
 }
 
+function getCategoryDescription(categoryName: string) {
+  const categoryMap: Record<string, string> = {
+    Politics:
+      "Explore the latest politics blogs, policy insights, governance updates, and current affairs coverage on Topicler.",
+    Finance:
+      "Read finance blogs, investing insights, market updates, personal finance guides, and money strategies on Topicler.",
+    "Real Estate":
+      "Browse real estate blogs, housing market trends, property guides, buying tips, and investment insights on Topicler.",
+    Technology:
+      "Discover technology blogs, AI trends, software insights, innovation updates, and digital transformation content on Topicler.",
+    Plumbing:
+      "Find practical plumbing blogs, maintenance tips, repair guides, and homeowner plumbing advice on Topicler.",
+    "Digital Marketing":
+      "Explore digital marketing blogs covering SEO, content strategy, paid ads, branding, and growth marketing on Topicler.",
+    "Home Improvements":
+      "Read home improvement blogs, renovation ideas, repair guides, design inspiration, and upgrade tips on Topicler.",
+    Health:
+      "Browse health blogs, wellness insights, lifestyle advice, and practical health information on Topicler.",
+  };
+
+  return (
+    categoryMap[categoryName] ||
+    `Explore all articles, ideas, and practical insights in the ${categoryName} category on Topicler.`
+  );
+}
+
+function getCategoryKeywords(categoryName: string) {
+  const common = [
+    "Topicler",
+    `${categoryName} blogs`,
+    `${categoryName} articles`,
+    `${categoryName} insights`,
+    `${categoryName} news`,
+    `${categoryName} guides`,
+    `${categoryName} tips`,
+  ];
+
+  const specific: Record<string, string[]> = {
+    Politics: [
+      "political analysis",
+      "policy updates",
+      "government news",
+      "current affairs",
+      "politics blog",
+    ],
+    Finance: [
+      "personal finance",
+      "investing tips",
+      "market trends",
+      "finance blog",
+      "money management",
+    ],
+    "Real Estate": [
+      "property market",
+      "housing trends",
+      "real estate investment",
+      "buying property",
+      "real estate blog",
+    ],
+    Technology: [
+      "tech trends",
+      "AI blogs",
+      "software updates",
+      "innovation news",
+      "technology blog",
+    ],
+    Plumbing: [
+      "plumbing tips",
+      "home plumbing",
+      "plumbing repair",
+      "maintenance guide",
+      "plumbing blog",
+    ],
+    "Digital Marketing": [
+      "SEO tips",
+      "content marketing",
+      "PPC advertising",
+      "branding strategy",
+      "digital marketing blog",
+    ],
+    "Home Improvements": [
+      "home renovation",
+      "repair ideas",
+      "interior upgrades",
+      "DIY home tips",
+      "home improvement blog",
+    ],
+    Health: [
+      "wellness tips",
+      "healthy lifestyle",
+      "medical insights",
+      "health advice",
+      "health blog",
+    ],
+  };
+
+  return [...common, ...(specific[categoryName] || [])];
+}
+
 export function generateStaticParams() {
   const uniqueCategories = Array.from(
     new Set(BLOGS.map((blog) => blog.category))
@@ -38,16 +137,64 @@ export async function generateMetadata({
 
   if (!blogs.length) {
     return {
+      metadataBase: new URL("https://topickler.netlify.app"),
       title: "Category Not Found | Topicler",
-      description: "The requested category could not be found.",
+      description: "The requested category could not be found on Topicler.",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
   const categoryName = blogs[0].category;
+  const description = getCategoryDescription(categoryName);
+  const keywords = getCategoryKeywords(categoryName);
+  const categoryUrl = `https://topickler.netlify.app/categories/${slug}`;
+  const ogImage = blogs[0]?.heroImage || "/images/ogImage.jpg";
 
   return {
+    metadataBase: new URL("https://topickler.netlify.app"),
     title: `${categoryName} Blogs | Topicler`,
-    description: `Browse all ${categoryName} blogs and articles on Topicler.`,
+    description,
+    keywords,
+    alternates: {
+      canonical: `/categories/${slug}`,
+    },
+    openGraph: {
+      title: `${categoryName} Blogs | Topicler`,
+      description,
+      url: categoryUrl,
+      siteName: "Topicler",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${categoryName} blogs on Topicler`,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${categoryName} Blogs | Topicler`,
+      description,
+      images: [ogImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    category: categoryName,
   };
 }
 
@@ -63,74 +210,75 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-white">
-   {/* Header */}
-<section className="relative overflow-hidden border-b border-slate-200 bg-[#fcfcfd]">
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,90,20,0.10),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.04),transparent_24%)]" />
+      {/* Header */}
+      <section className="relative overflow-hidden border-b border-slate-200 bg-[#fcfcfd]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,90,20,0.10),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.04),transparent_24%)]" />
 
-  <div className="relative mx-auto max-w-360 px-5 py-6 lg:px-8">
-    <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-      <div className="max-w-3xl">
-        <div className="mb-5 flex items-center gap-3">
-          <Image
-            src="/images/sectionicon.svg"
-            alt="section icon"
-            width={24}
-            height={24}
-          />
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FF5A14]">
-            Category
-          </span>
-        </div>
+        <div className="relative mx-auto max-w-360 px-5 py-6 lg:px-8">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="mb-5 flex items-center gap-3">
+                <Image
+                  src="/images/sectionicon.svg"
+                  alt="section icon"
+                  width={24}
+                  height={24}
+                />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FF5A14]">
+                  Category
+                </span>
+              </div>
 
-        <div className="mb-5 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-          <Link href="/" className="transition hover:text-[#0B1220]">
-            Home
-          </Link>
-          <span>/</span>
-          <Link
-            href="/categories"
-            className="transition hover:text-[#0B1220]"
-          >
-            Categories
-          </Link>
-          <span>/</span>
-          <span className="font-medium text-[#0B1220]">{categoryName}</span>
-        </div>
+              <div className="mb-5 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                <Link href="/" className="transition hover:text-[#0B1220]">
+                  Home
+                </Link>
+                <span>/</span>
+                <Link
+                  href="/categories"
+                  className="transition hover:text-[#0B1220]"
+                >
+                  Categories
+                </Link>
+                <span>/</span>
+                <span className="font-medium text-[#0B1220]">{categoryName}</span>
+              </div>
 
-        <h1 className="text-4xl font-bold tracking-tight text-[#0B1220] md:text-5xl lg:text-6xl lg:leading-[1.02]">
-          {categoryName}
-        </h1>
+              <h1 className="text-4xl font-bold tracking-tight text-[#0B1220] md:text-5xl lg:text-6xl lg:leading-[1.02]">
+                {categoryName}
+              </h1>
 
-        <p className="mt-5 max-w-2xl text-[16px] leading-8 text-slate-600 md:text-[17px]">
-          Explore all articles, ideas, and practical insights in the{" "}
-          {categoryName} category on Topicler.
-        </p>
+              <p className="mt-5 max-w-2xl text-[16px] leading-8 text-slate-600 md:text-[17px]">
+                Explore all articles, ideas, and practical insights in the{" "}
+                {categoryName} category on Topicler.
+              </p>
 
-        {/* 📊 Stats */}
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 rounded-full bg-white px-8 py-2 shadow-md border border-slate-200">
-            <span className="text-lg font-bold text-[#FF5A14]">
-              {blogs.length}
-            </span>
-            <span className="text-sm text-slate-600">
-              article{blogs.length === 1 ? "" : "s"}
-            </span>
+              {/* 📊 Stats */}
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2 rounded-full bg-white px-8 py-2 shadow-md border border-slate-200">
+                  <span className="text-lg font-bold text-[#FF5A14]">
+                    {blogs.length}
+                  </span>
+                  <span className="text-sm text-slate-600">
+                    article{blogs.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="/blog"
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-[#FF5A14]/30 bg-[#FF5A14]/5 px-6 py-3 text-sm font-semibold text-[#FF5A14] transition-all duration-300 hover:bg-[#FF5A14] hover:text-white"
+              >
+                Browse All Blogs
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <Link
-          href="/blog"
-          className="group inline-flex items-center justify-center gap-2 rounded-full border border-[#FF5A14]/30 bg-[#FF5A14]/5 px-6 py-3 text-sm font-semibold text-[#FF5A14] transition-all duration-300 hover:bg-[#FF5A14] hover:text-white"
-        >
-          Browse All Blogs
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-        </Link>
-      </div>
-    </div>
-  </div>
-</section>
       {/* Blog Grid */}
       <section className="mx-auto max-w-[1440px] px-5 py-12 lg:px-8 lg:py-16">
         <div className="mb-8 flex items-center justify-between gap-4">

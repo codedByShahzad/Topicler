@@ -14,12 +14,18 @@ export function generateStaticParams() {
 export const dynamicParams = false;
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://numorrra.netlify.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://topickler.netlify.app";
 
 function toISODateSafe(dateStr?: string) {
   if (!dateStr) return undefined;
   const d = new Date(dateStr);
   return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
+function absoluteUrl(path?: string) {
+  if (!path) return `${SITE_URL}/images/ogImage.jpg`;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 export async function generateMetadata({
@@ -33,34 +39,45 @@ export async function generateMetadata({
   if (!blog) {
     return {
       metadataBase: new URL(SITE_URL),
-      title: "Blog Not Found",
+      title: "Blog Not Found | Topicler",
       description:
-        "Simple, accurate, and clean blogs by Numoro — calculators, finance, health, and productivity.",
+        "The requested blog could not be found on Topicler. Explore the latest articles on politics, finance, real estate, technology, plumbing, digital marketing, health, and home improvements.",
       alternates: { canonical: "/blog" },
       robots: { index: false, follow: false },
       openGraph: {
-        title: "Blog Not Found",
+        title: "Blog Not Found | Topicler",
         description:
-          "Simple, accurate, and clean blogs by Numoro — calculators, finance, health, and productivity.",
-        url: "/blog",
-        siteName: "Numoro",
+          "The requested blog could not be found on Topicler. Explore the latest articles across multiple categories.",
+        url: `${SITE_URL}/blog`,
+        siteName: "Topicler",
         type: "website",
-        images: [{ url: "/og.png", width: 1200, height: 630, alt: "Numoro" }],
+        locale: "en_US",
+        images: [
+          {
+            url: `${SITE_URL}/images/ogImage.jpg`,
+            width: 1200,
+            height: 630,
+            alt: "Topicler",
+          },
+        ],
       },
       twitter: {
         card: "summary_large_image",
-        title: "Blog Not Found",
+        title: "Blog Not Found | Topicler",
         description:
-          "Simple, accurate, and clean blogs by Numoro — calculators, finance, health, and productivity.",
-        images: ["/og.png"],
+          "Explore the latest articles on Topicler across politics, finance, technology, and more.",
+        images: [`${SITE_URL}/images/ogImage.jpg`],
       },
     };
   }
 
-  const title = blog.seoTitle ?? blog.title;
-  const description = blog.seoDescription ?? blog.subtitle;
+  const title = blog.seoTitle ?? `${blog.title} | Topicler`;
+  const description =
+    blog.seoDescription ??
+    blog.subtitle ??
+    `Read ${blog.title} on Topicler and explore more insights in ${blog.category}.`;
   const canonicalPath = blog.canonicalPath ?? `/blog/${blog.slug}`;
-  const image = blog.ogImage ?? blog.heroImage;
+  const image = absoluteUrl(blog.ogImage ?? blog.heroImage ?? "/images/ogImage.jpg");
 
   const publishedTime =
     blog.publishISO ?? toISODateSafe(blog.publishDate) ?? undefined;
@@ -70,23 +87,45 @@ export async function generateMetadata({
     title,
     description,
     keywords: blog.keywords ?? [
-      "Numoro",
+      "Topicler",
       "blog",
       blog.category,
-      "calculators",
-      "finance",
-      "health",
+      `${blog.category} blog`,
+      `${blog.category} article`,
+      blog.title,
+      "politics blogs",
+      "finance blogs",
+      "real estate blogs",
+      "technology blogs",
+      "plumbing blogs",
+      "digital marketing blogs",
+      "health blogs",
+      "home improvement blogs",
     ],
     alternates: { canonical: canonicalPath },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    category: blog.category,
     openGraph: {
       type: "article",
-      siteName: "Numoro",
-      url: canonicalPath,
+      siteName: "Topicler",
+      url: `${SITE_URL}${canonicalPath}`,
       title,
       description,
+      locale: "en_US",
       images: [{ url: image, width: 1200, height: 630, alt: title }],
       publishedTime,
+      section: blog.category,
+      tags: blog.keywords,
     },
     twitter: {
       card: "summary_large_image",
@@ -190,9 +229,75 @@ export default async function BlogDetailPage({
     .slice(0, 6);
 
   const tocSections = blog.sections.map((s) => ({ id: s.id, title: s.title }));
+  const publishedTime =
+    blog.publishISO ?? toISODateSafe(blog.publishDate) ?? undefined;
+  const articleUrl = `${SITE_URL}${blog.canonicalPath ?? `/blog/${blog.slug}`}`;
+  const articleImage = absoluteUrl(
+    blog.ogImage ?? blog.heroImage ?? "/images/ogImage.jpg"
+  );
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: blog.seoTitle ?? blog.title,
+    description: blog.seoDescription ?? blog.subtitle,
+    image: [articleImage],
+    mainEntityOfPage: articleUrl,
+    url: articleUrl,
+    datePublished: publishedTime,
+    dateModified: publishedTime,
+    articleSection: blog.category,
+    keywords: blog.keywords?.join(", "),
+    author: {
+      "@type": "Organization",
+      name: "Topicler",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Topicler",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/images/logo.png`,
+      },
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${SITE_URL}/blog`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: blog.title,
+        item: articleUrl,
+      },
+    ],
+  };
 
   return (
     <div className="relative min-h-[92vh] bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       <GridBackground />
 
       <div className="mx-auto max-w-360 px-3 py-4 sm:px-4 md:px-6 md:py-10">
@@ -261,8 +366,6 @@ export default async function BlogDetailPage({
                   publishDate={blog.publishDate}
                   readingTime={blog.readingTime}
                 />
-                
-
               </div>
             </aside>
           </div>

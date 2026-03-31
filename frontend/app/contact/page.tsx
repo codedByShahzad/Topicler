@@ -3,10 +3,11 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiClock,
+  FiEdit3,
   FiMail,
-  FiMapPin,
-  FiPhone,
+  FiMessageSquare,
   FiSend,
+  FiUsers,
 } from "react-icons/fi";
 
 const contactCards = [
@@ -15,28 +16,28 @@ const contactCards = [
     icon: FiMail,
     title: "Email Address",
     value: "hello@topicler.com",
-    subtext: "Send us your questions anytime",
+    subtext: "Reach us directly for general questions and feedback",
   },
   {
     id: 2,
-    icon: FiPhone,
-    title: "Phone Number",
-    value: "+1 (234) 567-890",
-    subtext: "Mon - Fri from 9:00 AM to 6:00 PM",
+    icon: FiEdit3,
+    title: "Editorial Inquiries",
+    value: "Content & article discussions",
+    subtext: "For topic suggestions, corrections, and editorial communication",
   },
   {
     id: 3,
-    icon: FiMapPin,
-    title: "Office Location",
-    value: "New York, United States",
-    subtext: "Available for online communication",
+    icon: FiUsers,
+    title: "Collaborations",
+    value: "Partnership opportunities",
+    subtext: "Open to meaningful collaborations and creative ideas",
   },
   {
     id: 4,
     icon: FiClock,
-    title: "Working Hours",
-    value: "Mon - Fri / 9AM - 6PM",
-    subtext: "Weekend responses may take longer",
+    title: "Response Time",
+    value: "Usually within 24–48 hours",
+    subtext: "We do our best to respond as quickly as possible",
   },
 ];
 
@@ -84,9 +85,9 @@ export default function ContactPage() {
               </h1>
 
               <p className="mt-6 max-w-2xl text-[16px] leading-8 text-slate-600 md:text-[17px]">
-                Have a question, feedback, partnership idea, or just want to get
-                in touch? We’d love to hear from you. Reach out through the form
-                below or use our direct contact details.
+                Have a question, feedback, suggestion, or collaboration idea?
+                We’d love to hear from you. Reach out through the form below and
+                we’ll get back to you as soon as possible.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -108,7 +109,7 @@ export default function ContactPage() {
             </div>
 
             <div className="relative">
-              <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.08)] transition-all duration-300 hover:border-2 hover:border-[#FF5A14]">
+              <div className="relative overflow-hidden rounded-[30px] border-2 border-transparent bg-white shadow-[0_25px_80px_rgba(15,23,42,0.08)] transition-all duration-300 hover:border-[#FF5A14]">
                 <img
                   src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=1400&q=80"
                   alt="Contact workspace"
@@ -121,8 +122,8 @@ export default function ContactPage() {
                   Get In Touch
                 </div>
                 <p className="mt-2 max-w-[220px] text-sm leading-6 text-slate-600">
-                  We’re always open to hearing your ideas, questions, and
-                  feedback.
+                  We’re always open to hearing your ideas, feedback, and content
+                  suggestions.
                 </p>
               </div>
 
@@ -143,7 +144,7 @@ export default function ContactPage() {
           <div className="mb-12 max-w-2xl">
             <SectionLabel title="Reach Out" />
             <h2 className="text-3xl font-bold tracking-tight text-[#0B1220] md:text-4xl">
-              Multiple ways to connect with us.
+              Different ways to connect with us.
             </h2>
           </div>
 
@@ -153,7 +154,7 @@ export default function ContactPage() {
               return (
                 <div
                   key={item.id}
-                  className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-2 hover:border-[#FF5A14] hover:shadow-xl"
+                  className="rounded-[24px] border-2 border-transparent bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#FF5A14] hover:shadow-xl"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FF5A14]/10 text-[#FF5A14]">
                     <Icon className="h-6 w-6" />
@@ -180,7 +181,7 @@ export default function ContactPage() {
         <div className="mx-auto max-w-[1440px] px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             {/* LEFT */}
-            <div className="rounded-[30px] border border-slate-200 bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-2 hover:border-[#FF5A14] lg:p-10">
+            <div className="rounded-[30px] border-2 border-transparent bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-[#FF5A14] lg:p-10">
               <SectionLabel title="Contact Information" />
 
               <h2 className="text-3xl font-bold tracking-tight text-[#0B1220] md:text-4xl">
@@ -188,18 +189,21 @@ export default function ContactPage() {
               </h2>
 
               <p className="mt-5 text-[16px] leading-8 text-slate-600">
-                Whether you want to share feedback, ask a question, discuss
-                collaboration, or simply connect, our team is here to help.
+                Whether you want to share feedback, suggest a topic, point out a
+                correction, or discuss collaboration, we’re always happy to
+                connect.
               </p>
 
               <div className="mt-8 space-y-5">
-                <div className="rounded-2xl border border-slate-200 bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-2 hover:border-[#FF5A14]">
+                <div className="rounded-2xl border-2 border-transparent bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-[#FF5A14]">
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FF5A14]/10 text-[#FF5A14]">
                       <FiMail className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#0B1220]">Email Us</h3>
+                      <h3 className="font-semibold text-[#0B1220]">
+                        General Contact
+                      </h3>
                       <p className="mt-1 text-sm text-slate-600">
                         hello@topicler.com
                       </p>
@@ -207,31 +211,35 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-2 hover:border-[#FF5A14]">
+                <div className="rounded-2xl border-2 border-transparent bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-[#FF5A14]">
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FF5A14]/10 text-[#FF5A14]">
-                      <FiPhone className="h-5 w-5" />
+                      <FiMessageSquare className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#0B1220]">Call Us</h3>
+                      <h3 className="font-semibold text-[#0B1220]">
+                        Topic Suggestions
+                      </h3>
                       <p className="mt-1 text-sm text-slate-600">
-                        +1 (234) 567-890
+                        Share article ideas, feedback, or improvements you’d
+                        like to see.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-2 hover:border-[#FF5A14]">
+                <div className="rounded-2xl border-2 border-transparent bg-[#fcfcfd] p-5 transition-all duration-300 hover:border-[#FF5A14]">
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FF5A14]/10 text-[#FF5A14]">
                       <FiClock className="h-5 w-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-[#0B1220]">
-                        Office Hours
+                        Response Window
                       </h3>
                       <p className="mt-1 text-sm text-slate-600">
-                        Monday to Friday, 9:00 AM to 6:00 PM
+                        Most messages are reviewed and answered within 24–48
+                        hours.
                       </p>
                     </div>
                   </div>
@@ -240,7 +248,7 @@ export default function ContactPage() {
             </div>
 
             {/* RIGHT FORM */}
-            <div className="rounded-[30px] border border-slate-200 bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-2 hover:border-[#FF5A14] lg:p-10">
+            <div className="rounded-[30px] border-2 border-transparent bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-[#FF5A14] lg:p-10">
               <SectionLabel title="Send Message" />
 
               <h2 className="text-3xl font-bold tracking-tight text-[#0B1220] md:text-4xl">
@@ -325,10 +333,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* MAP / EXTRA CTA */}
+      {/* EXTRA SECTION */}
       <section className="pb-16 md:pb-24">
         <div className="mx-auto max-w-[1440px] px-5 lg:px-8">
-          <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-2 hover:border-[#FF5A14]">
+          <div className="overflow-hidden rounded-[32px] border-2 border-transparent bg-white shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-[#FF5A14]">
             <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
               <div className="p-8 lg:p-12">
                 <SectionLabel title="Stay Connected" />
@@ -338,8 +346,8 @@ export default function ContactPage() {
                 </h2>
 
                 <p className="mt-5 max-w-2xl text-[16px] leading-8 text-slate-600">
-                  We value meaningful communication and are always happy to hear
-                  from readers, partners, and collaborators.
+                  We value thoughtful communication and are always happy to hear
+                  from readers, contributors, and collaborators.
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-4">

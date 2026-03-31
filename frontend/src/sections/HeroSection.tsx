@@ -111,7 +111,7 @@ const DateText = ({
 const BigFeaturedCard = ({ post }: { post: BlogPost }) => (
   <Link href={`/blog/${post.slug}`} className="group block">
     <article className="relative overflow-hidden rounded-lg border border-slate-200 bg-[#0b1220] shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition duration-300 hover:shadow-[0_18px_50px_rgba(15,23,42,0.12)]">
-      <div className="relative h-[300px] overflow-hidden md:h-[380px] xl:h-[460px]">
+      <div className="relative h-[400px] overflow-hidden md:h-[380px] xl:h-[460px]">
         <Image
           src={post.heroImage}
           alt={post.title}
@@ -184,7 +184,7 @@ const TopCard = ({ post }: { post: BlogPost }) => (
 const SmallBottomCard = ({ post }: { post: BlogPost }) => (
   <Link href={`/blog/${post.slug}`} className="group block h-full">
     <article className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_5px_20px_rgba(15,23,42,0.04)] transition duration-300 hover:shadow-[0_12px_28px_rgba(15,23,42,0.08)]">
-      <div className="relative h-[88px] overflow-hidden md:h-[95px] xl:h-[110px]">
+      <div className="relative h-[100px] overflow-hidden md:h-[95px] xl:h-[110px]">
         <Image
           src={post.heroImage}
           alt={post.title}

@@ -21,7 +21,6 @@ export default function Navbar() {
   const router = useRouter();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const [desktopSearch, setDesktopSearch] = useState("");
   const [mobileSearch, setMobileSearch] = useState("");
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
@@ -34,38 +33,47 @@ export default function Navbar() {
 
   const mainNavLinks: NavLink[] = useMemo(
     () => [
-      { label: "Politics", href: `/categories/${slugifyCategory("Politics")}` },
-      { label: "Finance", href: `/categories/${slugifyCategory("Finance")}` },
       {
         label: "Real Estate",
         href: `/categories/${slugifyCategory("Real Estate")}`,
       },
       {
-        label: "Technology",
-        href: `/categories/${slugifyCategory("Technology")}`,
+        label: "Digital Marketing",
+        href: `/categories/${slugifyCategory("Digital Marketing")}`,
       },
+      { label: "Finance", href: `/categories/${slugifyCategory("Finance")}` },
     ],
     []
   );
 
   const moreNavLinks: NavLink[] = useMemo(
     () => [
-      { label: "Plumbing", href: `/categories/${slugifyCategory("Plumbing")}` },
-      {
-        label: "Digital Marketing",
-        href: `/categories/${slugifyCategory("Digital Marketing")}`,
-      },
       {
         label: "Home Improvement",
         href: `/categories/${slugifyCategory("Home Improvement")}`,
       },
+      { label: "Politics", href: `/categories/${slugifyCategory("Politics")}` },
+      {
+        label: "Technology",
+        href: `/categories/${slugifyCategory("Technology")}`,
+      },
+      { label: "Plumbing", href: `/categories/${slugifyCategory("Plumbing")}` },
+      { label: "Health", href: `/categories/${slugifyCategory("Health")}` },
+    ],
+    []
+  );
+
+  const staticNavLinks: NavLink[] = useMemo(
+    () => [
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
     ],
     []
   );
 
   const mobileNavLinks: NavLink[] = useMemo(
-    () => [...mainNavLinks, ...moreNavLinks],
-    [mainNavLinks, moreNavLinks]
+    () => [...mainNavLinks, ...moreNavLinks, ...staticNavLinks],
+    [mainNavLinks, moreNavLinks, staticNavLinks]
   );
 
   const filteredDesktopBlogs = useMemo(() => {
@@ -166,7 +174,10 @@ export default function Navbar() {
     setMobileSearchOpen(false);
   };
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   const isMoreActive = moreNavLinks.some((link) => isActive(link.href));
 
@@ -207,7 +218,9 @@ export default function Navbar() {
 
                   <span
                     className={`absolute -bottom-1 left-0 h-[2px] w-full origin-left bg-[#FF5A14] transition-transform duration-300 ${
-                      active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      active
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
                     }`}
                   />
                 </Link>
@@ -273,6 +286,36 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
+
+            {staticNavLinks.map((link) => {
+              const active = isActive(link.href);
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="group relative shrink-0 whitespace-nowrap"
+                >
+                  <span
+                    className={`text-[14px] font-medium transition duration-300 xl:text-[15px] ${
+                      active
+                        ? "text-[#FF5A14]"
+                        : "text-[#0B1220] group-hover:text-[#FF5A14]"
+                    }`}
+                  >
+                    {link.label}
+                  </span>
+
+                  <span
+                    className={`absolute -bottom-1 left-0 h-[2px] w-full origin-left bg-[#FF5A14] transition-transform duration-300 ${
+                      active
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -356,8 +399,8 @@ export default function Navbar() {
       <div
         className={`fixed inset-x-0 top-[73px] z-40 border-t border-slate-200 bg-white lg:hidden transition-all duration-300 ${
           mobileMenuOpen
-            ? "visible opacity-100 translate-y-0"
-            : "invisible opacity-0 -translate-y-2 pointer-events-none"
+            ? "visible translate-y-0 opacity-100"
+            : "invisible pointer-events-none -translate-y-2 opacity-0"
         }`}
       >
         <div className="h-[calc(100vh-73px)] overflow-y-auto">
@@ -433,7 +476,10 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setMoreOpen(false);
+                  }}
                   className={`rounded-xl px-4 py-3 text-[15px] font-medium transition ${
                     isActive(link.href)
                       ? "bg-[#FFF4EE] text-[#FF5A14]"

@@ -61,18 +61,7 @@ const Footer = () => {
               designed to be clean, readable, and useful.
             </p>
 
-            <div className="mt-6 flex items-center gap-3">
-              {socialLinks.map(({ icon: Icon, href, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-[#FF5A14] hover:text-[#FF5A14]"
-                >
-                  <Icon className="h-4 w-4" />
-                </Link>
-              ))}
-            </div>
+
           </div>
 
           {/* Company */}
@@ -130,18 +119,6 @@ const Footer = () => {
               </div>
             </div>
 
-            <ul className="mt-6 space-y-3">
-              {footerLinks.support.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-[15px] text-slate-600 transition hover:text-[#FF5A14]"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 

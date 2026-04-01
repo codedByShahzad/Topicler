@@ -56,7 +56,7 @@ function SectionLabel({ title }: { title: string }) {
   return (
     <div className="mb-4 flex items-center gap-3">
       <Image
-        src="/images/sectionIcon.svg"
+        src="/images/sectionicon.svg"
         alt="section icon"
         width={22}
         height={22}
@@ -122,13 +122,21 @@ export default function AboutPage() {
             </div>
 
             <div className="relative">
-              <div className="relative overflow-hidden rounded-[30px] border-2 border-transparent bg-white shadow-[0_25px_80px_rgba(15,23,42,0.08)] transition-all duration-300 hover:border-[#FF5A14] hover:shadow-[0_30px_90px_rgba(15,23,42,0.12)]">
-                <img
-                  src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80"
-                  alt="Modern blog workspace"
-                  className="block h-[320px] w-full object-cover md:h-[520px]"
-                />
-              </div>
+<div className="relative overflow-hidden rounded-[30px] border-2 border-transparent bg-white shadow-[0_25px_80px_rgba(15,23,42,0.08)] transition-all duration-300 hover:border-[#FF5A14] hover:shadow-[0_30px_90px_rgba(15,23,42,0.12)]">
+
+  <Image
+    src="/images/aboutHero.avif"
+    alt="About Topicler"
+    width={800}
+    height={600}
+    className="block h-[320px] w-full object-cover md:h-[520px]"
+    priority
+  />
+
+  {/* 🔥 OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+
+</div>
 
               <div className="absolute left-5 top-5 rounded-2xl bg-white/90 px-5 py-4 shadow-xl backdrop-blur-md">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FF5A14]">
@@ -159,21 +167,33 @@ export default function AboutPage() {
           <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div className="relative">
               <div className="grid grid-cols-2 gap-5">
-                <div className="relative h-[420px] overflow-hidden rounded-[28px] border-2 border-transparent shadow-sm transition-all duration-300 hover:border-[#FF5A14] hover:shadow-lg md:h-[520px]">
-                  <img
-                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80"
-                    alt="People reading and researching"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+<div className="relative h-[420px] overflow-hidden rounded-[28px] border-2 border-transparent shadow-sm transition-all duration-300 hover:border-[#FF5A14] hover:shadow-lg md:h-[520px]">
 
-                <div className="relative mt-10 h-[420px] overflow-hidden rounded-[28px] border-2 border-transparent shadow-sm transition-all duration-300 hover:border-[#FF5A14] hover:shadow-lg md:h-[520px]">
-                  <img
-                    src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80"
-                    alt="Writing and editorial work"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+  <Image
+    src="/images/aboutStory1.avif"
+    alt="People reading and researching"
+    fill
+    className="object-cover"
+  />
+
+  {/* 🔥 OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+
+</div>
+
+<div className="relative mt-10 h-[420px] overflow-hidden rounded-[28px] border-2 border-transparent shadow-sm transition-all duration-300 hover:border-[#FF5A14] hover:shadow-lg md:h-[520px]">
+
+  <Image
+    src="/images/aboutStory2.avif"
+    alt="Writing and editorial work"
+    fill
+    className="object-cover"
+  />
+
+  {/* 🔥 OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+
+</div>
               </div>
 
               <div className="absolute bottom-4 left-1/2 z-10 w-[270px] -translate-x-1/2 rounded-[24px] bg-white/95 p-5 shadow-[0_15px_50px_rgba(15,23,42,0.12)] backdrop-blur-md md:w-[320px]">
@@ -195,8 +215,8 @@ export default function AboutPage() {
               </h2>
 
               <p className="mt-6 text-[16px] leading-8 text-slate-600">
-                Topicler brings together articles across multiple categories in a
-                clean, structured, and enjoyable format. Instead of cluttered
+                Topicler brings together articles across multiple categories in
+                a clean, structured, and enjoyable format. Instead of cluttered
                 pages and overwhelming layouts, we focus on strong readability,
                 simple navigation, and thoughtful presentation.
               </p>

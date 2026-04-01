@@ -1,5 +1,11 @@
+"use client";
+
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import emailjs from "@emailjs/browser";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   FiArrowRight,
   FiClock,
@@ -10,12 +16,14 @@ import {
   FiUsers,
 } from "react-icons/fi";
 
+type Status = "idle" | "sending" | "success" | "error";
+
 const contactCards = [
   {
     id: 1,
     icon: FiMail,
     title: "Email Address",
-    value: "hello@topicler.com",
+    value: "contact@topicler.com",
     subtext: "Reach us directly for general questions and feedback",
   },
   {
@@ -45,7 +53,7 @@ function SectionLabel({ title }: { title: string }) {
   return (
     <div className="mb-4 flex items-center gap-3">
       <Image
-        src="/images/sectionIcon.svg"
+        src="/images/sectionicon.svg"
         alt="section icon"
         width={22}
         height={22}
@@ -58,8 +66,107 @@ function SectionLabel({ title }: { title: string }) {
 }
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [status, setStatus] = useState<Status>("idle");
+
+  const isSending = status === "sending";
+
+  const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
+  const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "";
+  const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const clearForm = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus("error");
+      toast.error(
+        "EmailJS environment variables are missing. Please add Service ID, Template ID, and Public Key."
+      );
+      return;
+    }
+
+    setStatus("sending");
+
+    try {
+      const templateParams = {
+        from_name: `${formData.firstName} ${formData.lastName}`.trim(),
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        from_email: formData.email,
+        reply_to: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        to_email: "contact@topicler.com",
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, {
+        publicKey,
+      });
+
+      clearForm();
+      setStatus("success");
+      toast.success("Message sent successfully. We’ll get back to you soon.");
+    } catch (error: unknown) {
+      console.error("EmailJS send failed:", error);
+
+      let message = "Failed to send message. Please try again.";
+
+      if (error && typeof error === "object" && "text" in error) {
+        message = String((error as { text?: string }).text || message);
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
+      setStatus("error");
+      toast.error(message);
+    } finally {
+      setStatus("idle");
+    }
+  };
+
   return (
     <main className="bg-[#f8fafc] text-[#0B1220]">
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+        closeButton={false}   // ✅ THIS removes the X button
+      />
+
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-slate-200 bg-[#fcfcfd]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,90,20,0.10),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.04),transparent_24%)]" />
@@ -110,11 +217,15 @@ export default function ContactPage() {
 
             <div className="relative">
               <div className="relative overflow-hidden rounded-[30px] border-2 border-transparent bg-white shadow-[0_25px_80px_rgba(15,23,42,0.08)] transition-all duration-300 hover:border-[#FF5A14]">
-                <img
-                  src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=1400&q=80"
+                <Image
+                  src="/images/contactHero.avif"
                   alt="Contact workspace"
+                  width={900}
+                  height={700}
                   className="block h-[320px] w-full object-cover md:h-[520px]"
+                  priority
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
               </div>
 
               <div className="absolute left-5 top-5 rounded-2xl bg-white/90 px-5 py-4 shadow-xl backdrop-blur-md">
@@ -131,7 +242,9 @@ export default function ContactPage() {
                 <div className="text-[11px] uppercase tracking-[0.2em] text-white/80">
                   Contact Page
                 </div>
-                <div className="mt-1 text-lg font-bold">Simple. Clear. Helpful.</div>
+                <div className="mt-1 text-lg font-bold">
+                  Simple. Clear. Helpful.
+                </div>
               </div>
             </div>
           </div>
@@ -180,7 +293,6 @@ export default function ContactPage() {
       <section id="contact-form" className="pb-16 md:pb-24">
         <div className="mx-auto max-w-[1440px] px-5 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            {/* LEFT */}
             <div className="rounded-[30px] border-2 border-transparent bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-[#FF5A14] lg:p-10">
               <SectionLabel title="Contact Information" />
 
@@ -205,7 +317,7 @@ export default function ContactPage() {
                         General Contact
                       </h3>
                       <p className="mt-1 text-sm text-slate-600">
-                        hello@topicler.com
+                        contact@topicler.com
                       </p>
                     </div>
                   </div>
@@ -247,7 +359,6 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* RIGHT FORM */}
             <div className="rounded-[30px] border-2 border-transparent bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.06)] transition-all duration-300 hover:border-[#FF5A14] lg:p-10">
               <SectionLabel title="Send Message" />
 
@@ -260,16 +371,20 @@ export default function ContactPage() {
                 possible.
               </p>
 
-              <form className="mt-8 space-y-5">
+              <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm font-medium text-[#0B1220]">
                       First Name
                     </label>
                     <input
+                      name="firstName"
                       type="text"
                       placeholder="Enter your first name"
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-[#fcfcfd] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14]"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
 
@@ -278,9 +393,13 @@ export default function ContactPage() {
                       Last Name
                     </label>
                     <input
+                      name="lastName"
                       type="text"
                       placeholder="Enter your last name"
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-[#fcfcfd] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14]"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -291,9 +410,13 @@ export default function ContactPage() {
                       Email Address
                     </label>
                     <input
+                      name="email"
                       type="email"
                       placeholder="Enter your email"
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-[#fcfcfd] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14]"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
 
@@ -302,9 +425,13 @@ export default function ContactPage() {
                       Subject
                     </label>
                     <input
+                      name="subject"
                       type="text"
                       placeholder="Enter subject"
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-[#fcfcfd] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14]"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -314,19 +441,35 @@ export default function ContactPage() {
                     Message
                   </label>
                   <textarea
+                    name="message"
                     rows={7}
                     placeholder="Write your message here..."
                     className="w-full rounded-2xl border border-slate-200 bg-[#fcfcfd] px-4 py-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14]"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#e85110]"
-                >
-                  Send Message
-                  <FiSend className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </button>
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    type="submit"
+                    disabled={isSending}
+                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#e85110] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isSending ? "Sending..." : "Send Message"}
+                    <FiSend className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={clearForm}
+                    disabled={isSending}
+                    className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-3 text-sm font-semibold text-[#0B1220] transition-all duration-300 hover:border-[#FF5A14] hover:text-[#FF5A14] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    Clear Form
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -369,11 +512,13 @@ export default function ContactPage() {
               </div>
 
               <div className="relative min-h-[320px] lg:min-h-full">
-                <img
-                  src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1400&q=80"
+                <Image
+                  src="/images/contactBanner.avif"
                   alt="Contact and communication"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
               </div>
             </div>
           </div>

@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export", // 👈 THIS IS REQUIRED for Hostinger
+  output: "export",
+
+  trailingSlash: true, // ✅ ADD THIS LINE
 
   images: {
-    unoptimized: true, // 👈 REQUIRED for static export
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

@@ -13,8 +13,7 @@ export function generateStaticParams() {
 }
 export const dynamicParams = false;
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://topickler.netlify.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://topicler.com";
 
 function toISODateSafe(dateStr?: string) {
   if (!dateStr) return undefined;
@@ -77,7 +76,9 @@ export async function generateMetadata({
     blog.subtitle ??
     `Read ${blog.title} on Topicler and explore more insights in ${blog.category}.`;
   const canonicalPath = blog.canonicalPath ?? `/blog/${blog.slug}`;
-  const image = absoluteUrl(blog.ogImage ?? blog.heroImage ?? "/images/ogImage.jpg");
+  const image = absoluteUrl(
+    blog.ogImage ?? blog.heroImage ?? "/images/ogImage.jpg"
+  );
 
   const publishedTime =
     blog.publishISO ?? toISODateSafe(blog.publishDate) ?? undefined;
@@ -303,7 +304,7 @@ export default async function BlogDetailPage({
       <div className="mx-auto max-w-360 px-3 py-4 sm:px-4 md:px-6 md:py-10">
         {/* HERO */}
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white/70 shadow-sm">
-          <div className="relative h-[550px]  md:h-[480px]">
+          <div className="relative h-[550px] md:h-[480px]">
             <Image
               src={blog.heroImage}
               alt={blog.title}

@@ -11,11 +11,13 @@ import {
 import { BLOGS } from "@/src/lib/blog";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topickler.netlify.app"),
-  title:
-    "Blog Categories | Topicler",
+  metadataBase: new URL("https://topicler.com"),
+
+  title: "Blog Categories | Topicler",
+
   description:
     "Explore all Topicler categories including Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
+
   keywords: [
     "Topicler categories",
     "blog categories",
@@ -28,18 +30,20 @@ export const metadata: Metadata = {
     "health blogs",
     "home improvement blogs",
   ],
+
   alternates: {
     canonical: "/categories",
   },
+
   openGraph: {
     title: "Blog Categories | Topicler",
     description:
       "Browse all Topicler categories and discover expert articles across Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
-    url: "https://topickler.netlify.app/categories",
+    url: "https://topicler.com/categories",
     siteName: "Topicler",
     images: [
       {
-        url: "/images/ogImage.png",
+        url: "https://topicler.com/images/ogImage.png", // ✅ FIXED
         width: 1200,
         height: 630,
         alt: "Topicler Categories Page",
@@ -48,13 +52,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "Blog Categories | Topicler",
     description:
       "Explore all blog categories on Topicler, from Politics and Finance to Technology, Plumbing, and more.",
-    images: ["/images/ogImage.jpg"],
+    images: ["https://topicler.com/images/ogImage.png"], // ✅ FIXED
   },
+
   robots: {
     index: true,
     follow: true,
@@ -66,6 +72,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+
   category: "blog",
 };
 

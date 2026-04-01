@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -7,6 +8,64 @@ import {
   FiGlobe,
   FiLayers,
 } from "react-icons/fi";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://topicler.com"),
+  title: "About Us | Topicler",
+  description:
+    "Learn more about Topicler, a modern multi-category blog platform covering politics, finance, real estate, technology, digital marketing, plumbing, and home improvement.",
+  keywords: [
+    "About Topicler",
+    "Topicler blog platform",
+    "multi-category blog",
+    "politics blog",
+    "finance blog",
+    "real estate articles",
+    "technology insights",
+    "digital marketing blog",
+    "plumbing tips",
+    "home improvement ideas",
+  ],
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About Us | Topicler",
+    description:
+      "Discover Topicler’s mission, editorial vision, and the categories we cover across politics, finance, technology, real estate, and more.",
+    url: "https://topicler.com/about",
+    siteName: "Topicler",
+    images: [
+      {
+        url: "https://topicler.com/images/ogImage.png",
+        width: 1200,
+        height: 630,
+        alt: "About Topicler",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | Topicler",
+    description:
+      "Discover Topicler’s mission, editorial vision, and the categories we cover.",
+    images: ["https://topicler.com/images/ogImage.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
+
 
 const stats = [
   { id: 1, value: "500+", label: "Articles Published" },

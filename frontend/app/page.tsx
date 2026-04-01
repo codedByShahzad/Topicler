@@ -5,7 +5,7 @@ import TrendingSection from "@/src/sections/TrendingSection";
 import NewsletterSection from "@/src/sections/NewsletterSection";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topickler.netlify.app"),
+  metadataBase: new URL("https://topicler.com"),
 
   title:
     "Topicler | Blogs on Politics, Finance, Real Estate, Technology & More",
@@ -35,11 +35,11 @@ export const metadata: Metadata = {
       "Topicler | Blogs on Politics, Finance, Real Estate, Technology & More",
     description:
       "Explore expert blogs on Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, and Home Improvement.",
-    url: "https://topickler.netlify.app",
+    url: "https://topicler.com",
     siteName: "Topicler",
     images: [
       {
-        url: "https://topickler.netlify.app/images/ogImage.png",
+        url: "https://topicler.com/images/ogImage.png",
         width: 1200,
         height: 630,
         alt: "Topicler Blog Platform",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     title: "Topicler | Multi-Niche Blog Platform",
     description:
       "Stay updated with blogs on Finance, Tech, Marketing, Plumbing & more.",
-    images: ["/images/ogImage.jpg"],
+    images: ["https://topicler.com/images/ogImage.png"], // ✅ fixed
   },
 
   robots: {

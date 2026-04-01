@@ -119,6 +119,12 @@ function getCategoryKeywords(categoryName: string) {
   return [...common, ...(specific[categoryName] || [])];
 }
 
+function toAbsoluteImageUrl(image?: string) {
+  if (!image) return "https://topicler.com/images/ogImage.png";
+  if (image.startsWith("http://") || image.startsWith("https://")) return image;
+  return `https://topicler.com${image}`;
+}
+
 export function generateStaticParams() {
   const uniqueCategories = Array.from(
     new Set(BLOGS.map((blog) => blog.category))
@@ -137,7 +143,7 @@ export async function generateMetadata({
 
   if (!blogs.length) {
     return {
-      metadataBase: new URL("https://topickler.netlify.app"),
+      metadataBase: new URL("https://topicler.com"),
       title: "Category Not Found | Topicler",
       description: "The requested category could not be found on Topicler.",
       robots: {
@@ -150,11 +156,11 @@ export async function generateMetadata({
   const categoryName = blogs[0].category;
   const description = getCategoryDescription(categoryName);
   const keywords = getCategoryKeywords(categoryName);
-  const categoryUrl = `https://topickler.netlify.app/categories/${slug}`;
-  const ogImage = blogs[0]?.heroImage || "/images/ogImage.png";
+  const categoryUrl = `https://topicler.com/categories/${slug}`;
+  const ogImage = toAbsoluteImageUrl(blogs[0]?.heroImage);
 
   return {
-    metadataBase: new URL("https://topickler.netlify.app"),
+    metadataBase: new URL("https://topicler.com"),
     title: `${categoryName} Blogs | Topicler`,
     description,
     keywords,
@@ -253,7 +259,6 @@ export default async function CategoryPage({ params }: PageProps) {
                 {categoryName} category on Topicler.
               </p>
 
-              {/* 📊 Stats */}
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2 rounded-full bg-white px-8 py-2 shadow-md border border-slate-200">
                   <span className="text-lg font-bold text-[#FF5A14]">

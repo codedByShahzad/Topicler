@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topickler.netlify.app"),
+  metadataBase: new URL("https://topicler.com"),
   title: {
     default: "Topicler",
     template: "%s | Topicler",
@@ -42,11 +42,11 @@ export const metadata: Metadata = {
     title: "Topicler",
     description:
       "Topicler is a multi-category blog covering Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
-    url: "https://topickler.netlify.app",
+    url: "https://topicler.com",
     siteName: "Topicler",
     images: [
       {
-        url: "https://topickler.netlify.app/images/ogImage.png",
+        url: "https://topicler.com/images/ogImage.png",
         width: 1200,
         height: 630,
         alt: "Topicler",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: "Topicler",
     description:
       "Explore blogs on Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
-    images: ["https://topickler.netlify.app/images/ogImage.png"],
+    images: ["https://topicler.com/images/ogImage.png"],
   },
   robots: {
     index: true,

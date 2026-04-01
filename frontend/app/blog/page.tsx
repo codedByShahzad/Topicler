@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import BlogListClient from "./BlogListClient";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topickler.netlify.app"),
+  metadataBase: new URL("https://topicler.com"),
 
   title: "All Blogs | Topicler",
+
   description:
     "Browse all blogs on Topicler covering Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
 
@@ -32,13 +33,13 @@ export const metadata: Metadata = {
     title: "All Blogs | Topicler",
     description:
       "Explore all Topicler blogs with expert articles on Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, Health, and Home Improvements.",
-    url: "https://topickler.netlify.app/blog",
+    url: "https://topicler.com/blog",
     siteName: "Topicler",
     type: "website",
     locale: "en_US",
     images: [
       {
-        url: "/images/ogImage.png",
+        url: "https://topicler.com/images/ogImage.png", // ✅ fixed
         width: 1200,
         height: 630,
         alt: "Topicler Blog",
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     title: "All Blogs | Topicler",
     description:
       "Browse the latest blogs and articles on Topicler across Politics, Finance, Tech, Marketing, Health, Plumbing, and more.",
-    images: ["/images/ogImage.jpg"],
+    images: ["https://topicler.com/images/ogImage.png"], // ✅ fixed
   },
 
   robots: {

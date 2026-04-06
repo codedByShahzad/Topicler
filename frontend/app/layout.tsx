@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/src/components/Navbar";
 import Footer from "@/src/components/Footer";
+import Script from "next/script";
+import GoogleAnalytics from "@/src/components/GoogleAnalytics"; // ✅ Client component
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +38,7 @@ export const metadata: Metadata = {
     "health blogs",
     "home improvement blogs",
   ],
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Topicler",
     description:
@@ -82,16 +83,39 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      {/* Google Analytics Scripts */}
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-7TNVTJLEMH"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7TNVTJLEMH', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
       <body className="min-h-full flex flex-col">
         <Navbar />
+        {/* GA tracking */}
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         {children}
         <Footer />
       </body>

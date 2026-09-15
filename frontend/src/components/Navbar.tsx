@@ -34,8 +34,8 @@ export default function Navbar() {
   const mainNavLinks: NavLink[] = useMemo(
     () => [
       {
-        label: "Real Estate",
-        href: `/categories/${slugifyCategory("Real Estate")}`,
+        label: "Home",
+        href: `/`,
       },
       {
         label: "Digital Marketing",
@@ -46,22 +46,7 @@ export default function Navbar() {
     []
   );
 
-  const moreNavLinks: NavLink[] = useMemo(
-    () => [
-      {
-        label: "Home Improvement",
-        href: `/categories/${slugifyCategory("Home Improvement")}`,
-      },
-      { label: "Politics", href: `/categories/${slugifyCategory("Politics")}` },
-      {
-        label: "Technology",
-        href: `/categories/${slugifyCategory("Technology")}`,
-      },
-      { label: "Plumbing", href: `/categories/${slugifyCategory("Plumbing")}` },
-      { label: "Health", href: `/categories/${slugifyCategory("Health")}` },
-    ],
-    []
-  );
+
 
   const staticNavLinks: NavLink[] = useMemo(
     () => [
@@ -72,8 +57,8 @@ export default function Navbar() {
   );
 
   const mobileNavLinks: NavLink[] = useMemo(
-    () => [...mainNavLinks, ...moreNavLinks, ...staticNavLinks],
-    [mainNavLinks, moreNavLinks, staticNavLinks]
+    () => [...mainNavLinks, ...staticNavLinks],
+    [mainNavLinks, staticNavLinks]
   );
 
   const filteredDesktopBlogs = useMemo(() => {
@@ -179,7 +164,7 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const isMoreActive = moreNavLinks.some((link) => isActive(link.href));
+  // const isMoreActive = moreNavLinks.some((link) => isActive(link.href));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
@@ -227,65 +212,7 @@ export default function Navbar() {
               );
             })}
 
-            <div ref={moreDropdownRef} className="relative shrink-0">
-              <button
-                type="button"
-                onClick={() => setMoreOpen((prev) => !prev)}
-                className="group relative flex items-center gap-1 whitespace-nowrap"
-              >
-                <span
-                  className={`text-[14px] font-medium transition duration-300 xl:text-[15px] ${
-                    isMoreActive || moreOpen
-                      ? "text-[#FF5A14]"
-                      : "text-[#0B1220] group-hover:text-[#FF5A14]"
-                  }`}
-                >
-                  More
-                </span>
 
-                <ChevronDown
-                  size={16}
-                  className={`transition duration-300 ${
-                    isMoreActive || moreOpen
-                      ? "rotate-180 text-[#FF5A14]"
-                      : "text-[#0B1220] group-hover:text-[#FF5A14]"
-                  }`}
-                />
-
-                <span
-                  className={`absolute -bottom-1 left-0 h-[2px] w-full origin-left bg-[#FF5A14] transition-transform duration-300 ${
-                    isMoreActive || moreOpen
-                      ? "scale-x-100"
-                      : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </button>
-
-              <div
-                className={`absolute left-0 top-[calc(100%+14px)] w-[240px] rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl transition-all duration-200 ${
-                  moreOpen
-                    ? "visible translate-y-0 opacity-100"
-                    : "invisible -translate-y-2 opacity-0"
-                }`}
-              >
-                <div className="space-y-1">
-                  {moreNavLinks.map((link) => (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`block rounded-xl px-4 py-3 text-[14px] font-medium transition ${
-                        isActive(link.href)
-                          ? "bg-[#FFF4EE] text-[#FF5A14]"
-                          : "text-[#0B1220] hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
 
             {staticNavLinks.map((link) => {
               const active = isActive(link.href);

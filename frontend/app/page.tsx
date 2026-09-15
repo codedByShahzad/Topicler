@@ -1,8 +1,4 @@
 import type { Metadata } from "next";
-import HeroSection from "../src/sections/HeroSection";
-import FeaturedCategoriesSection from "@/src/sections/FeaturedCategoriesSection";
-import TrendingSection from "@/src/sections/TrendingSection";
-import NewsletterSection from "@/src/sections/NewsletterSection";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
@@ -78,10 +74,7 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <main className="bg-white">
-      <HeroSection />
-      <FeaturedCategoriesSection />
-      <TrendingSection />
-      <NewsletterSection />
+      
     </main>
   );
 };

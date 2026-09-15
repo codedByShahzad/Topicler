@@ -70,7 +70,7 @@ export default function BlogCard({
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.045)] transition-all duration-300 hover:-translate-y-1 hover:border-[#FF5A14] hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-      <Link href={`/blog/${slug}`} className="block">
+      <Link href={`/blogs/${slug}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
           <Image
             src={heroImage}
@@ -102,7 +102,7 @@ export default function BlogCard({
           </span>
         </div>
 
-        <Link href={`/blog/${slug}`}>
+        <Link href={`/blogs/${slug}`}>
           <h2 className="text-[1.08rem] font-bold leading-snug text-[#0B1220] transition duration-300 group-hover:text-[#FF5A14] md:text-[1.22rem]">
             {title}
           </h2>
@@ -114,7 +114,7 @@ export default function BlogCard({
 
         <div className="mt-auto pt-5">
           <Link
-            href={`/blog/${slug}`}
+            href={`/blogs/${slug}`}
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#FF5A14] transition-all duration-200 group-hover:gap-3"
           >
             Read article

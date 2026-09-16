@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   CalendarRange,
-  ChevronRight,
   Compass,
   FileText,
   Layers,
@@ -29,6 +27,58 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
+/*
+ * Page animations — pure CSS, no JavaScript, no extra packages.
+ * - Hero: one short load sequence (icon pops, text and generator rise in).
+ * - How It Works: steps appear one by one and the connector lines "draw" as you scroll.
+ * - Other sections: a soft fade-up when they scroll into view.
+ * Everything is skipped for users who enable "reduce motion". Browsers without
+ * scroll-driven animation support simply show the content without the scroll effects.
+ */
+const motionCss = `
+@keyframes tp-rise { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: none; } }
+@keyframes tp-pop { 0% { opacity: 0; scale: 0.6; } 70% { opacity: 1; scale: 1.06; } 100% { opacity: 1; scale: 1; } }
+@keyframes tp-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@keyframes tp-draw-x { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes tp-draw-y { from { scale: 1 0; } to { scale: 1 1; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tp-pop { animation: tp-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  .tp-float { animation: tp-float 4s ease-in-out 0.9s infinite; }
+  .tp-rise { animation: tp-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .tp-d1 { animation-delay: 0.12s; }
+  .tp-d2 { animation-delay: 0.24s; }
+  .tp-d3 { animation-delay: 0.38s; }
+
+  @supports (animation-timeline: view()) {
+    .tp-reveal {
+      animation: tp-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    .tp-line-x { transform-origin: left center; }
+    .tp-line-y { transform-origin: center top; }
+
+    /* Mobile + tablet: each step and line animates as it enters the screen */
+    .tp-step { animation: tp-rise linear both; animation-timeline: view(); animation-range: entry 0% cover 25%; }
+    .tp-line-y { animation: tp-draw-y linear both; animation-timeline: view(); animation-range: entry 0% cover 35%; }
+
+    /* Desktop: steps share one timeline so they appear left to right */
+    @media (min-width: 1024px) {
+      .tp-steps { view-timeline-name: --tp-steps; }
+      .tp-step { animation-timeline: --tp-steps; animation-range: cover 12% cover 26%; }
+      .tp-step:nth-child(2) { animation-range: cover 18% cover 32%; }
+      .tp-step:nth-child(3) { animation-range: cover 24% cover 38%; }
+      .tp-step:nth-child(4) { animation-range: cover 30% cover 44%; }
+      .tp-line-x { animation: tp-draw-x linear both; animation-timeline: --tp-steps; animation-range: cover 20% cover 32%; }
+      .tp-step:nth-child(2) .tp-line-x { animation-range: cover 26% cover 38%; }
+      .tp-step:nth-child(3) .tp-line-x { animation-range: cover 32% cover 44%; }
+    }
+  }
+}
+`;
 
 const steps = [
   {
@@ -147,104 +197,94 @@ const footerLinks: { label: string; href: string | null }[] = [
 
 export default function RandomTopicGeneratorPage() {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#171717]">
-      {/* 1. Navigation + breadcrumb */}
-      <header className="border-b border-[#E5E7EB] bg-white">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-md text-lg font-bold tracking-tight text-[#171717] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F97316]"
-          >
-            <span
-              aria-hidden="true"
-              className="flex size-8 items-center justify-center rounded-lg bg-[#F97316] text-white"
-            >
-              <Sparkles className="size-4" />
-            </span>
-            Topicla
-          </Link>
-          <nav aria-label="Main">
-            <a
-              href="#related-tools"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-[#525252] transition-colors hover:bg-[#FFF7ED] hover:text-[#C2410C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F97316]"
-            >
-              AI Tools
-            </a>
-          </nav>
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col overflow-x-clip bg-white text-[#171717]">
+      <style dangerouslySetInnerHTML={{ __html: motionCss }} />
 
       <main className="flex-1">
-        <nav aria-label="Breadcrumb" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
-          <ol className="flex flex-wrap items-center gap-1 text-sm text-[#525252]">
-            <li>
-              <Link href="/" className="rounded hover:text-[#C2410C] focus-visible:outline-2 focus-visible:outline-[#F97316]">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRight className="size-4" />
-            </li>
-            <li>
-              <a href="#related-tools" className="rounded hover:text-[#C2410C] focus-visible:outline-2 focus-visible:outline-[#F97316]">
-                AI Tools
-              </a>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRight className="size-4" />
-            </li>
-            <li aria-current="page" className="font-medium text-[#171717]">
-              Random Topic Generator
-            </li>
-          </ol>
-        </nav>
-
         {/* 2. Hero */}
         <section className="relative px-4 pb-12 pt-14 text-center sm:px-6 sm:pt-20">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 -z-0 mx-auto h-72 max-w-3xl rounded-full bg-[radial-gradient(closest-side,#FFEDD5,transparent)] opacity-80"
           />
-          <div className="relative mx-auto max-w-3xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-3 py-1 text-xs font-semibold tracking-wide text-[#C2410C]">
-              <Sparkles className="size-3.5" aria-hidden="true" />
-              AI TOPIC GENERATOR
+          <div className="relative mx-auto">
+            <span className="tp-pop inline-block">
+              <svg
+                viewBox="0 0 48 48"
+                fill="none"
+                aria-hidden="true"
+                className="tp-float mx-auto size-12 sm:size-14"
+              >
+                <path
+                  d="M10 4h16a6 6 0 0 1 6 6v11a6 6 0 0 1-6 6H14l-6.2 5.4A1 1 0 0 1 6 31.6v-5.2A6 6 0 0 1 4 21V10a6 6 0 0 1 6-6z"
+                  fill="#F97316"
+                />
+                <path
+                  d="M22 15h16a6 6 0 0 1 6 6v11a6 6 0 0 1-2 4.4v5.2a1 1 0 0 1-1.8.8L34 38H22a6 6 0 0 1-6-6V21a6 6 0 0 1 6-6z"
+                  fill="#F97316"
+                  stroke="#FFFFFF"
+                  strokeWidth="3"
+                  paintOrder="stroke"
+                />
+                <rect x="22" y="23" width="16" height="3.5" rx="1.75" fill="#FFFFFF" />
+                <rect x="22" y="29" width="10" height="3.5" rx="1.75" fill="#FFFFFF" />
+              </svg>
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight text-[#171717] text-balance sm:text-5xl lg:text-6xl">
-              Generate Fresh Topics for Your Content
+
+            <h1 className="tp-rise tp-d1 mt-5 text-4xl font-bold leading-[1.1] tracking-tight text-[#171717] text-balance sm:text-5xl lg:text-5xl">
+              Generate Random Topics for Writing
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#525252] text-pretty">
-              Generate relevant topic ideas for blogs, videos, SEO content, social media, and more.
-              Enter your niche and let AI spark your next great idea.
+
+            <p className="tp-rise tp-d2 mx-auto mt-5 max-w-5xl text-lg leading-relaxed text-[#525252] text-pretty">
+              Generate random topic ideas for SEO content, blog posts, videos, and discussions. This tool helps spark content ideas, expand topical coverage, and support keyword research and content planning.
             </p>
           </div>
         </section>
 
         {/* 3 + 4. Generate Ideas + Topic Ideas (client) */}
-        <TopicGenerator />
+        <div className="tp-rise tp-d3">
+          <TopicGenerator />
+        </div>
 
         {/* 5. How It Works */}
         <section aria-labelledby="how-heading" className="mt-24 bg-[#FFF7ED] px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-6xl">
-            <h2 id="how-heading" className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 id="how-heading" className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl">
               How It Works
             </h2>
-            <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+            <ol className="tp-steps mx-auto mt-12 max-w-xl lg:mt-14 lg:grid lg:max-w-none lg:grid-cols-4 lg:gap-x-6">
               {steps.map((step, i) => (
-                <li key={step.title} className="relative rounded-2xl border border-[#FED7AA] bg-white p-6">
-                  <div className="flex items-center justify-between">
-                    <span className="flex size-11 items-center justify-center rounded-xl bg-[#F97316] text-white">
-                      <step.icon className="size-5" aria-hidden="true" />
-                    </span>
-                    <span className="text-3xl font-bold tabular-nums text-[#FDBA74]" aria-hidden="true">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                <li
+                  key={step.title}
+                  className="tp-step group relative flex gap-5 pb-8 last:pb-0 lg:flex-col lg:items-center lg:gap-0 lg:pb-0 lg:text-center"
+                >
+                  {i < steps.length - 1 && (
+                    <>
+                      {/* Vertical connector (mobile + tablet) */}
+                      <span
+                        aria-hidden="true"
+                        className="tp-line-y absolute bottom-0 left-8 top-16 w-0.5 -translate-x-1/2 bg-[linear-gradient(to_bottom,#FB923C,#FED7AA)] lg:hidden"
+                      />
+                      {/* Horizontal connector (desktop) */}
+                      <span
+                        aria-hidden="true"
+                        className="tp-line-x absolute left-[calc(50%+3.25rem)] right-[calc(-50%+1.75rem)] top-10 hidden h-0.5 -translate-y-1/2 bg-[linear-gradient(to_right,#FB923C,#FED7AA)] lg:block"
+                      />
+                    </>
+                  )}
+
+                  <span className="relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full border-2 border-[#FDBA74] bg-white text-[#EA580C] shadow-[0_6px_16px_-8px_rgba(234,88,12,0.45)] transition-[background-color,color,border-color,transform] duration-300 ease-out group-hover:border-[#F97316] group-hover:bg-[#F97316] group-hover:text-white group-hover:[transform:scale(1.06)] motion-reduce:transition-none lg:size-20">
+                    <step.icon className="size-6 lg:size-7" aria-hidden="true" />
+                  </span>
+
+                  <div className="flex-1 rounded-2xl bg-white/70 p-5 ring-1 ring-[#FED7AA]/60 transition-[background-color,box-shadow] duration-300 group-hover:bg-white group-hover:shadow-[0_14px_30px_-18px_rgba(234,88,12,0.4)] motion-reduce:transition-none lg:mt-6 lg:w-full lg:flex-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#C2410C]">
+                      Step {i + 1}
+                    </p>
+                    <h3 className="mt-2 text-lg font-semibold text-[#171717]">{step.title}</h3>
+                    <p className="mt-1.5 leading-relaxed text-[#525252]">{step.text}</p>
                   </div>
-                  <h3 className="mt-5 text-lg font-semibold">
-                    <span className="sr-only">Step {i + 1}: </span>
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 leading-relaxed text-[#525252]">{step.text}</p>
                 </li>
               ))}
             </ol>
@@ -254,7 +294,7 @@ export default function RandomTopicGeneratorPage() {
         {/* 6. What is a Random Topic Generator? */}
         <section aria-labelledby="what-heading" className="px-4 py-20 sm:px-6">
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-start">
-            <div>
+            <div className="tp-reveal">
               <h2 id="what-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
                 What is a Random Topic Generator?
               </h2>
@@ -289,7 +329,7 @@ export default function RandomTopicGeneratorPage() {
 
             <aside
               aria-label="Example of one idea in several formats"
-              className="rounded-2xl border border-[#E5E7EB] bg-white p-6 lg:mt-16"
+              className="tp-reveal rounded-2xl border border-[#E5E7EB] bg-white p-6 lg:mt-16"
             >
               <p className="text-sm font-medium text-[#525252]">One idea, many formats</p>
               <p className="mt-2 text-lg font-semibold leading-snug">
@@ -320,7 +360,7 @@ export default function RandomTopicGeneratorPage() {
         {/* 7. When to Use */}
         <section aria-labelledby="when-heading" className="border-y border-[#E5E7EB] bg-[#FAFAFA] px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-6xl">
-            <div className="max-w-2xl">
+            <div className="tp-reveal max-w-2xl">
               <h2 id="when-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
                 When to Use the Random Topic Generator?
               </h2>
@@ -331,8 +371,11 @@ export default function RandomTopicGeneratorPage() {
             </div>
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {useCases.map((item) => (
-                <article key={item.title} className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-7">
-                  <span className="flex size-11 items-center justify-center rounded-xl bg-[#FFF7ED] text-[#EA580C]">
+                <article
+                  key={item.title}
+                  className="tp-reveal group rounded-2xl border border-[#E5E7EB] bg-white p-6 transition-[border-color,box-shadow,transform] duration-300 ease-out hover:border-[#FED7AA] hover:shadow-[0_16px_32px_-20px_rgba(234,88,12,0.45)] hover:[transform:translateY(-4px)] motion-reduce:transition-none sm:p-7"
+                >
+                  <span className="flex size-11 items-center justify-center rounded-xl bg-[#FFF7ED] text-[#EA580C] transition-colors duration-300 group-hover:bg-[#F97316] group-hover:text-white motion-reduce:transition-none">
                     <item.icon className="size-5" aria-hidden="true" />
                   </span>
                   <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
@@ -346,7 +389,7 @@ export default function RandomTopicGeneratorPage() {
         {/* 8. FAQ */}
         <section aria-labelledby="faq-heading" className="px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-3xl">
-            <h2 id="faq-heading" className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 id="faq-heading" className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl">
               Frequently Asked Questions
             </h2>
             <div className="mt-10">
@@ -354,72 +397,7 @@ export default function RandomTopicGeneratorPage() {
             </div>
           </div>
         </section>
-
-        {/* 9. Related Tools */}
-        <section
-          id="related-tools"
-          aria-labelledby="related-heading"
-          className="scroll-mt-6 px-4 pb-24 sm:px-6"
-        >
-          <div className="mx-auto max-w-6xl">
-            <h2 id="related-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Related Tools
-            </h2>
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {relatedTools.map((tool) => (
-                <li key={tool.title} className="rounded-2xl border border-[#E5E7EB] bg-white p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="flex size-10 items-center justify-center rounded-lg bg-[#FFF7ED] text-[#EA580C]">
-                      <tool.icon className="size-5" aria-hidden="true" />
-                    </span>
-                    <span className="rounded-full bg-[#F5F5F5] px-2 py-0.5 text-xs font-medium text-[#525252]">
-                      Coming soon
-                    </span>
-                  </div>
-                  <h3 className="mt-4 font-semibold">{tool.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-[#525252]">{tool.text}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
       </main>
-
-      {/* 10. Footer */}
-      <footer className="border-t border-[#E5E7EB] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div>
-            <p className="flex items-center gap-2 text-lg font-bold tracking-tight">
-              <span aria-hidden="true" className="flex size-7 items-center justify-center rounded-md bg-[#F97316] text-white">
-                <Sparkles className="size-3.5" />
-              </span>
-              Topicla
-            </p>
-            <p className="mt-2 text-sm text-[#525252]">AI-powered tools for better ideas and content.</p>
-          </div>
-          <nav aria-label="Footer">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              {footerLinks.map((link) => (
-                <li key={link.label}>
-                  {link.href ? (
-                    <a
-                      href={link.href}
-                      className="rounded text-[#525252] hover:text-[#C2410C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F97316]"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <span className="text-[#8A8A8A]">{link.label}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-        <div className="border-t border-[#E5E7EB] py-5 text-center text-xs text-[#525252]">
-          © Topicla. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export type GenerateTopicsError = {
   error: string;
 };
 
-export const TOPIC_COUNT = 20;
+export const TOPIC_COUNT = 10;
 export const MIN_INPUT_LENGTH = 2;
 export const MAX_INPUT_LENGTH = 200;
 

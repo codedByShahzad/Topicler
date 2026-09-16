@@ -141,12 +141,12 @@ export default function TopicGenerator() {
   const describedBy = [hintId, inputError ? errorId : null].filter(Boolean).join(" ");
 
   return (
-    <>
+    <div className="mx-auto max-w-[1440px] lg:grid lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]    lg:items-start lg:gap-10 lg:px-6">
       {/* Generate Ideas */}
       <section
         id="generate"
         aria-labelledby="generate-heading"
-        className="mx-auto w-full max-w-3xl px-4 sm:px-6"
+        className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-none lg:px-0"
       >
         <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5 shadow-[0_1px_2px_rgba(23,23,23,0.04),0_12px_32px_-12px_rgba(234,88,12,0.18)] sm:p-8">
           <h2 id="generate-heading" className="text-xl font-semibold text-[#171717] sm:text-2xl">
@@ -243,7 +243,7 @@ export default function TopicGenerator() {
         id="topic-ideas"
         aria-labelledby="ideas-heading"
         aria-busy={isLoading}
-        className="mx-auto mt-16 w-full max-w-6xl scroll-mt-6 px-4 sm:px-6"
+        className="mx-auto mt-16 w-full max-w-6xl scroll-mt-6 px-4 sm:px-6 lg:mt-0 lg:max-w-none lg:px-0 "
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -301,7 +301,7 @@ export default function TopicGenerator() {
           )}
 
           {isLoading ? (
-            <ul className="grid gap-4 md:grid-cols-2" aria-hidden="true">
+            <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-1" aria-hidden="true">
               {Array.from({ length: 6 }).map((_, i) => (
                 <li key={i} className="rounded-2xl border border-[#E5E7EB] bg-white p-5">
                   <div className="flex gap-4">
@@ -319,18 +319,21 @@ export default function TopicGenerator() {
               ))}
             </ul>
           ) : topics.length > 0 ? (
-            <ol className="grid gap-4 md:grid-cols-2" aria-label={`${topics.length} topic ideas`}>
-              {topics.map((topic, index) => (
-                <TopicCard
-                  key={`${topic.title}-${index}`}
-                  topic={topic}
-                  index={index}
-                  isCopied={copiedIndex === index}
-                  copyFailed={copyFailedIndex === index}
-                  onCopy={handleCopy}
-                />
-              ))}
-            </ol>
+            <ol
+  className="grid max-h-[620px] gap-4 overflow-y-auto pr-2 md:grid-cols-2 lg:grid-cols-1"
+  aria-label={`${topics.length} topic ideas`}
+>
+  {topics.map((topic, index) => (
+    <TopicCard
+      key={`${topic.title}-${index}`}
+      topic={topic}
+      index={index}
+      isCopied={copiedIndex === index}
+      copyFailed={copyFailedIndex === index}
+      onCopy={handleCopy}
+    />
+  ))}
+</ol>
           ) : (
             status !== "error" && (
               <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#FED7AA] bg-[#FFF7ED]/60 px-6 py-14 text-center">
@@ -339,13 +342,13 @@ export default function TopicGenerator() {
                 </span>
                 <p className="mt-4 font-medium text-[#171717]">No ideas yet</p>
                 <p className="mt-1 max-w-sm text-sm text-[#525252]">
-                  Enter a niche above and we&apos;ll suggest {TOPIC_COUNT} topics across different formats and angles.
+                  Enter a niche and we&apos;ll suggest {TOPIC_COUNT} topics across different formats and angles.
                 </p>
               </div>
             )
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }

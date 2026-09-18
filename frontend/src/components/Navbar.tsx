@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Menu, X, Search, ChevronDown } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { BLOGS } from "@/src/lib/blog";
 
@@ -11,10 +11,6 @@ type NavLink = {
   label: string;
   href: string;
 };
-
-function slugifyCategory(value: string) {
-  return value.toLowerCase().trim().replace(/\s+/g, "-");
-}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -25,40 +21,18 @@ export default function Navbar() {
   const [mobileSearch, setMobileSearch] = useState("");
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
 
   const desktopSearchRef = useRef<HTMLDivElement | null>(null);
   const mobileSearchRef = useRef<HTMLDivElement | null>(null);
-  const moreDropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const mainNavLinks: NavLink[] = useMemo(
+  const navLinks: NavLink[] = useMemo(
     () => [
-      {
-        label: "Home",
-        href: `/`,
-      },
-      {
-        label: "Digital Marketing",
-        href: `/categories/${slugifyCategory("Digital Marketing")}`,
-      },
-      { label: "Finance", href: `/categories/${slugifyCategory("Finance")}` },
-    ],
-    []
-  );
-
-
-
-  const staticNavLinks: NavLink[] = useMemo(
-    () => [
+      { label: "Home", href: "/" },
+      { label: "Blogs", href: "/blog" },
       { label: "About", href: "/about" },
-      { label: "Contact", href: "/contact" },
+      { label: "Connect", href: "/contact" },
     ],
     []
-  );
-
-  const mobileNavLinks: NavLink[] = useMemo(
-    () => [...mainNavLinks, ...staticNavLinks],
-    [mainNavLinks, staticNavLinks]
   );
 
   const filteredDesktopBlogs = useMemo(() => {
@@ -106,18 +80,8 @@ export default function Navbar() {
         setDesktopSearchOpen(false);
       }
 
-      if (
-        mobileSearchRef.current &&
-        !mobileSearchRef.current.contains(target)
-      ) {
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(target)) {
         setMobileSearchOpen(false);
-      }
-
-      if (
-        moreDropdownRef.current &&
-        !moreDropdownRef.current.contains(target)
-      ) {
-        setMoreOpen(false);
       }
     }
 
@@ -160,181 +124,145 @@ export default function Navbar() {
   };
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
+  if (href === "/") {
+    return (
+      pathname === "/" ||
+      pathname === "/tools/random-topic-generator" ||
+      pathname.startsWith("/tools/random-topic-generator/")
+    );
+  }
 
-  // const isMoreActive = moreNavLinks.some((link) => isActive(link.href));
+  return pathname === href || pathname.startsWith(`${href}/`);
+};
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
-        <Link href="/" className="flex shrink-0 items-center">
-          <Image
-            src="/images/logo.png"
-            alt="Topicler Logo"
-            width={190}
-            height={60}
-            className="h-10 w-auto object-contain sm:h-11 xl:h-12"
-            priority
-          />
-        </Link>
+    <header className="sticky top-2 z-50 w-full bg-white px-3 pb-2 pt-[3px] sm:px-5 lg:px-6 xl:px-8">
+      <div className="relative mx-auto max-w-[1440px]">
+        {/* Floating pill */}
+        <div className="flex items-center justify-between gap-4 rounded-full border border-slate-200/80 bg-white px-4 py-2 shadow-[0_6px_24px_-14px_rgba(11,18,32,0.35)] sm:px-5 lg:px-6">
+          <Link href="/" className="flex shrink-0 items-center">
+            <Image
+              src="/images/logo.png"
+              alt="Topicler Logo"
+              width={190}
+              height={60}
+              className="h-9 w-auto object-contain sm:h-10 xl:h-11"
+              priority
+            />
+          </Link>
 
-        <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
-          <nav className="flex items-center gap-5 xl:gap-7">
-            {mainNavLinks.map((link) => {
-              const active = isActive(link.href);
+          <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
+            <nav className="flex items-center gap-1 xl:gap-2">
+              {navLinks.map((link) => {
+                const active = isActive(link.href);
 
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="group relative shrink-0 whitespace-nowrap"
-                >
-                  <span
-                    className={`text-[14px] font-medium transition duration-300 xl:text-[15px] ${
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-[14px] font-medium transition-colors duration-200 xl:px-4 xl:text-[15px] ${
                       active
-                        ? "text-[#FF5A14]"
-                        : "text-[#0B1220] group-hover:text-[#FF5A14]"
+                        ? "bg-[#FFF1E8] text-[#FF5A14]"
+                        : "text-[#0B1220] hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
                     }`}
                   >
                     {link.label}
-                  </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
 
-                  <span
-                    className={`absolute -bottom-1 left-0 h-[2px] w-full origin-left bg-[#FF5A14] transition-transform duration-300 ${
-                      active
-                        ? "scale-x-100"
-                        : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
-                </Link>
-              );
-            })}
+          <div
+            ref={desktopSearchRef}
+            className="relative hidden w-full max-w-[240px] lg:block xl:max-w-[290px]"
+          >
+            <form onSubmit={handleDesktopSearchSubmit}>
+              <div className="flex h-12 items-center rounded-full border border-slate-200 bg-[#FFF4EE] px-5 shadow-sm transition duration-300 focus-within:border-[#FF5A14] focus-within:bg-white focus-within:shadow-md">
+                <Search size={18} className="mr-3 shrink-0 text-slate-400" />
+                <input
+                  type="text"
+                  value={desktopSearch}
+                  onChange={(e) => {
+                    setDesktopSearch(e.target.value);
+                    setDesktopSearchOpen(true);
+                  }}
+                  onFocus={() => setDesktopSearchOpen(true)}
+                  placeholder="Search blogs..."
+                  className="w-full min-w-0 bg-transparent text-sm text-[#0B1220] outline-none placeholder:text-slate-400"
+                />
+              </div>
+            </form>
 
+            {desktopSearchOpen && desktopSearch.trim() && (
+              <div className="absolute left-0 right-0 top-[calc(100%+12px)] rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                {filteredDesktopBlogs.length > 0 ? (
+                  <div className="space-y-1">
+                    {filteredDesktopBlogs.map((blog) => (
+                      <button
+                        key={blog.slug}
+                        type="button"
+                        onClick={() => {
+                          router.push(`/blog/${blog.slug}`);
+                          setDesktopSearch("");
+                          setDesktopSearchOpen(false);
+                        }}
+                        className="block w-full rounded-xl px-4 py-3 text-left transition hover:bg-[#FFF4EE]"
+                      >
+                        <p className="text-sm font-semibold text-[#0B1220]">
+                          {blog.title}
+                        </p>
+                        <p className="mt-1 text-xs font-medium text-[#FF5A14]">
+                          {blog.category}
+                        </p>
+                      </button>
+                    ))}
 
-
-            {staticNavLinks.map((link) => {
-              const active = isActive(link.href);
-
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="group relative shrink-0 whitespace-nowrap"
-                >
-                  <span
-                    className={`text-[14px] font-medium transition duration-300 xl:text-[15px] ${
-                      active
-                        ? "text-[#FF5A14]"
-                        : "text-[#0B1220] group-hover:text-[#FF5A14]"
-                    }`}
-                  >
-                    {link.label}
-                  </span>
-
-                  <span
-                    className={`absolute -bottom-1 left-0 h-[2px] w-full origin-left bg-[#FF5A14] transition-transform duration-300 ${
-                      active
-                        ? "scale-x-100"
-                        : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div
-          ref={desktopSearchRef}
-          className="relative hidden w-full max-w-[240px] lg:block xl:max-w-[290px]"
-        >
-          <form onSubmit={handleDesktopSearchSubmit}>
-            <div className="flex h-12 items-center rounded-full border border-slate-200 bg-[#F9FAFB] px-5 shadow-sm transition duration-300 focus-within:border-[#FF5A14] focus-within:bg-white focus-within:shadow-md">
-              <Search size={18} className="mr-3 shrink-0 text-slate-400" />
-              <input
-                type="text"
-                value={desktopSearch}
-                onChange={(e) => {
-                  setDesktopSearch(e.target.value);
-                  setDesktopSearchOpen(true);
-                }}
-                onFocus={() => setDesktopSearchOpen(true)}
-                placeholder="Search blogs..."
-                className="w-full min-w-0 bg-transparent text-sm text-[#0B1220] outline-none placeholder:text-slate-400"
-              />
-            </div>
-          </form>
-
-          {desktopSearchOpen && desktopSearch.trim() && (
-            <div className="absolute left-0 right-0 top-[calc(100%+12px)] rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
-              {filteredDesktopBlogs.length > 0 ? (
-                <div className="space-y-1">
-                  {filteredDesktopBlogs.map((blog) => (
                     <button
-                      key={blog.slug}
                       type="button"
                       onClick={() => {
-                        router.push(`/blog/${blog.slug}`);
-                        setDesktopSearch("");
+                        router.push(
+                          `/blog?search=${encodeURIComponent(desktopSearch.trim())}`
+                        );
                         setDesktopSearchOpen(false);
                       }}
-                      className="block w-full rounded-xl px-4 py-3 text-left transition hover:bg-[#FFF4EE]"
+                      className="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-[#FF5A14] transition hover:bg-[#FFF4EE]"
                     >
-                      <p className="text-sm font-semibold text-[#0B1220]">
-                        {blog.title}
-                      </p>
-                      <p className="mt-1 text-xs font-medium text-[#FF5A14]">
-                        {blog.category}
-                      </p>
+                      View all results for “{desktopSearch.trim()}”
                     </button>
-                  ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl px-4 py-4 text-sm text-slate-500">
+                    No blog found.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      router.push(
-                        `/blog?search=${encodeURIComponent(desktopSearch.trim())}`
-                      );
-                      setDesktopSearchOpen(false);
-                    }}
-                    className="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-[#FF5A14] transition hover:bg-[#FFF4EE]"
-                  >
-                    View all results for “{desktopSearch.trim()}”
-                  </button>
-                </div>
-              ) : (
-                <div className="rounded-xl px-4 py-4 text-sm text-slate-500">
-                  No blog found.
-                </div>
-              )}
-            </div>
-          )}
+          <button
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[#0B1220] transition hover:border-[#FF5A14] hover:text-[#FF5A14] lg:hidden"
+            aria-label="Toggle Menu"
+            aria-expanded={mobileMenuOpen}
+            type="button"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
 
-        <button
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[#0B1220] transition hover:border-[#FF5A14] hover:text-[#FF5A14] lg:hidden"
-          aria-label="Toggle Menu"
-          type="button"
+        {/* Mobile panel — anchored under the floating pill */}
+        <div
+          className={`absolute inset-x-0 top-full z-40 mt-2 rounded-3xl border border-slate-200 bg-white shadow-xl transition-all duration-300 lg:hidden ${
+            mobileMenuOpen
+              ? "visible translate-y-0 opacity-100"
+              : "pointer-events-none invisible -translate-y-2 opacity-0"
+          }`}
         >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      <div
-        className={`fixed inset-x-0 top-[73px] z-40 border-t border-slate-200 bg-white lg:hidden transition-all duration-300 ${
-          mobileMenuOpen
-            ? "visible translate-y-0 opacity-100"
-            : "invisible pointer-events-none -translate-y-2 opacity-0"
-        }`}
-      >
-        <div className="h-[calc(100vh-73px)] overflow-y-auto">
-          <div className="mx-auto max-w-7xl px-5 py-4">
+          <div className="max-h-[calc(100vh-110px)] overflow-y-auto px-4 py-4">
             <div ref={mobileSearchRef} className="relative mb-4">
               <form onSubmit={handleMobileSearchSubmit}>
-                <div className="flex h-12 items-center rounded-full border border-slate-200 bg-[#F9FAFB] px-5 shadow-sm transition duration-300 focus-within:border-[#FF5A14] focus-within:bg-white focus-within:shadow-md">
+                <div className="flex h-12 items-center rounded-full border border-slate-200 bg-[#FFF4EE] px-5 shadow-sm transition duration-300 focus-within:border-[#FF5A14] focus-within:bg-white focus-within:shadow-md">
                   <Search size={18} className="mr-3 text-slate-400" />
                   <input
                     type="text"
@@ -399,17 +327,14 @@ export default function Navbar() {
             </div>
 
             <nav className="flex flex-col gap-2">
-              {mobileNavLinks.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setMoreOpen(false);
-                  }}
-                  className={`rounded-xl px-4 py-3 text-[15px] font-medium transition ${
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`rounded-full px-4 py-3 text-[15px] font-medium transition ${
                     isActive(link.href)
-                      ? "bg-[#FFF4EE] text-[#FF5A14]"
+                      ? "bg-[#FFF1E8] text-[#FF5A14]"
                       : "text-[#0B1220] hover:bg-[#FFF4EE] hover:text-[#FF5A14]"
                   }`}
                 >

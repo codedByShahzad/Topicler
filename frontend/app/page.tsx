@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
@@ -71,12 +72,7 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
-const Home = () => {
-  return (
-    <main className="bg-white">
-      
-    </main>
-  );
-};
 
-export default Home;
+export default function HomePage() {
+  redirect("/tools/random-topic-generator");
+}

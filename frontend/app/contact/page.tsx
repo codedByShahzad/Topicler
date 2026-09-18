@@ -3,27 +3,36 @@ import ContactPageSection from "@/src/sections/ContactPageSection";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
-  title: "Contact Us | Topicler",
+
+  title: "Contact Topicler | Get in Touch",
+
   description:
-    "Get in touch with Topicler for feedback, editorial inquiries, collaborations, and general questions. Reach out to our team through the contact form.",
+    "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
+
   keywords: [
     "Contact Topicler",
-    "Topicler contact page",
-    "editorial inquiries",
-    "collaborations",
-    "general contact",
-    "blog contact form",
+    "Topicler contact",
+    "Topicler feedback",
+    "Topicler support",
+    "Topicler questions",
+    "Topicler tools",
     "contact Topicler team",
   ],
+
   alternates: {
     canonical: "/contact",
   },
+
   openGraph: {
-    title: "Contact Us | Topicler",
+    title: "Contact Topicler | Get in Touch",
+
     description:
-      "Get in touch with Topicler for feedback, editorial inquiries, collaborations, and general questions.",
+      "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
+
     url: "https://topicler.com/contact",
+
     siteName: "Topicler",
+
     images: [
       {
         url: "https://topicler.com/images/ogImage.png",
@@ -32,19 +41,27 @@ export const metadata: Metadata = {
         alt: "Contact Topicler",
       },
     ],
+
     locale: "en_US",
+
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Contact Us | Topicler",
+
+    title: "Contact Topicler | Get in Touch",
+
     description:
-      "Get in touch with Topicler for feedback, editorial inquiries, collaborations, and general questions.",
+      "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
+
     images: ["https://topicler.com/images/ogImage.png"],
   },
+
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,

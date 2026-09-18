@@ -17,14 +17,87 @@ import TopicGenerator from "@/src/components/topic-generator/TopicGenerator";
 import FAQ, { type FaqItem } from "@/src/components/topic-generator/FAQ";
 
 export const metadata: Metadata = {
-  title: "AI Random Topic Generator | Topicla",
+  metadataBase: new URL("https://topicler.com"),
+
+  title: "Random Topic Generator | Generate Topic Ideas | Topicler",
+
   description:
-    "Generate fresh topic ideas for blogs, SEO content, videos, social media, and more with Topicla's AI topic generator.",
+    "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more. Find fresh content ideas and plan your next piece with Topicler.",
+
+  keywords: [
+    "random topic generator",
+    "topic generator",
+    "random topic ideas",
+    "topic ideas generator",
+    "content topic generator",
+    "blog topic generator",
+    "SEO topic generator",
+    "content ideas",
+    "blog ideas",
+    "YouTube topic ideas",
+  ],
+
+  authors: [
+    {
+      name: "Topicler",
+      url: "https://topicler.com",
+    },
+  ],
+
+  creator: "Topicler",
+  publisher: "Topicler",
+
+  category: "Content Tools",
+
+  alternates: {
+    canonical: "/tools/random-topic-generator",
+  },
+
   openGraph: {
-    title: "AI Random Topic Generator | Topicla",
+    title: "Random Topic Generator | Generate Topic Ideas | Topicler",
+
     description:
-      "Generate fresh topic ideas for blogs, SEO content, videos, social media, and more with Topicla's AI topic generator.",
+      "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more with Topicler.",
+
+    url: "https://topicler.com/tools/random-topic-generator",
+
+    siteName: "Topicler",
+
+    images: [
+      {
+        url: "https://topicler.com/images/ogImage.png",
+        width: 1200,
+        height: 630,
+        alt: "Topicler Random Topic Generator",
+      },
+    ],
+
+    locale: "en_US",
     type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+
+    title: "Random Topic Generator | Topicler",
+
+    description:
+      "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more with Topicler.",
+
+    images: ["https://topicler.com/images/ogImage.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -164,36 +237,57 @@ const faqs: FaqItem[] = [
   },
 ];
 
-const relatedTools = [
-  {
-    icon: PenLine,
-    title: "Blog Topic Generator",
-    text: "Ideas shaped for long-form articles and posts.",
-  },
-  {
-    icon: Clapperboard,
-    title: "YouTube Topic Generator",
-    text: "Video ideas built around what viewers search for.",
-  },
-  {
-    icon: Lightbulb,
-    title: "Content Idea Generator",
-    text: "Ideas across social, email, and newsletters.",
-  },
-  {
-    icon: TrendingUp,
-    title: "SEO Topic Generator",
-    text: "Topic clusters to support organic growth.",
-  },
-];
-
-// Swap `href: null` for a real path once each page exists, to avoid broken links.
-const footerLinks: { label: string; href: string | null }[] = [
-  { label: "Tools", href: "#related-tools" },
-  { label: "About", href: null },
-  { label: "Privacy", href: null },
-  { label: "Terms", href: null },
-];
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://topicler.com/tools/random-topic-generator#webapp",
+      name: "Random Topic Generator",
+      description:
+        "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more.",
+      url: "https://topicler.com/tools/random-topic-generator",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Web Browser",
+      browserRequirements: "Requires JavaScript",
+      provider: {
+        "@type": "Organization",
+        name: "Topicler",
+        url: "https://topicler.com",
+      },
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://topicler.com/tools/random-topic-generator#webpage",
+      url: "https://topicler.com/tools/random-topic-generator",
+      name: "Random Topic Generator | Generate Topic Ideas | Topicler",
+      description:
+        "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more.",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Topicler",
+        url: "https://topicler.com",
+      },
+      about: {
+        "@type": "Thing",
+        name: "Topic Generation",
+      },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://topicler.com/tools/random-topic-generator#faq",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+  ],
+};
 
 export default function RandomTopicGeneratorPage() {
   return (
@@ -201,6 +295,13 @@ export default function RandomTopicGeneratorPage() {
       <style dangerouslySetInnerHTML={{ __html: motionCss }} />
 
       <main className="flex-1">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+
         {/* 2. Hero */}
         <section className="relative px-4 pb-12 pt-14 text-center sm:px-6 sm:pt-20">
           <div
@@ -226,8 +327,22 @@ export default function RandomTopicGeneratorPage() {
                   strokeWidth="3"
                   paintOrder="stroke"
                 />
-                <rect x="22" y="23" width="16" height="3.5" rx="1.75" fill="#FFFFFF" />
-                <rect x="22" y="29" width="10" height="3.5" rx="1.75" fill="#FFFFFF" />
+                <rect
+                  x="22"
+                  y="23"
+                  width="16"
+                  height="3.5"
+                  rx="1.75"
+                  fill="#FFFFFF"
+                />
+                <rect
+                  x="22"
+                  y="29"
+                  width="10"
+                  height="3.5"
+                  rx="1.75"
+                  fill="#FFFFFF"
+                />
               </svg>
             </span>
 
@@ -247,9 +362,15 @@ export default function RandomTopicGeneratorPage() {
         </div>
 
         {/* 5. How It Works */}
-        <section aria-labelledby="how-heading" className="mt-24 bg-[#FFF7ED] px-4 py-16 sm:px-6 sm:py-20">
+        <section
+          aria-labelledby="how-heading"
+          className="mt-24 bg-[#FFF7ED] px-4 py-16 sm:px-6 sm:py-20"
+        >
           <div className="mx-auto max-w-6xl">
-            <h2 id="how-heading" className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2
+              id="how-heading"
+              className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl"
+            >
               How It Works
             </h2>
 
@@ -275,15 +396,22 @@ export default function RandomTopicGeneratorPage() {
                   )}
 
                   <span className="relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full border-2 border-[#FDBA74] bg-white text-[#EA580C] shadow-[0_6px_16px_-8px_rgba(234,88,12,0.45)] transition-[background-color,color,border-color,transform] duration-300 ease-out group-hover:border-[#F97316] group-hover:bg-[#F97316] group-hover:text-white group-hover:[transform:scale(1.06)] motion-reduce:transition-none lg:size-20">
-                    <step.icon className="size-6 lg:size-7" aria-hidden="true" />
+                    <step.icon
+                      className="size-6 lg:size-7"
+                      aria-hidden="true"
+                    />
                   </span>
 
                   <div className="flex-1 rounded-2xl bg-white/70 p-5 ring-1 ring-[#FED7AA]/60 transition-[background-color,box-shadow] duration-300 group-hover:bg-white group-hover:shadow-[0_14px_30px_-18px_rgba(234,88,12,0.4)] motion-reduce:transition-none lg:mt-6 lg:w-full lg:flex-1">
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#C2410C]">
                       Step {i + 1}
                     </p>
-                    <h3 className="mt-2 text-lg font-semibold text-[#171717]">{step.title}</h3>
-                    <p className="mt-1.5 leading-relaxed text-[#525252]">{step.text}</p>
+                    <h3 className="mt-2 text-lg font-semibold text-[#171717]">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1.5 leading-relaxed text-[#525252]">
+                      {step.text}
+                    </p>
                   </div>
                 </li>
               ))}
@@ -292,36 +420,46 @@ export default function RandomTopicGeneratorPage() {
         </section>
 
         {/* 6. What is a Random Topic Generator? */}
-        <section aria-labelledby="what-heading" className="px-4 py-20 sm:px-6">
+        <section
+          aria-labelledby="what-heading"
+          className="px-4 py-20 sm:px-6"
+        >
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-start">
             <div className="tp-reveal">
-              <h2 id="what-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2
+                id="what-heading"
+                className="text-3xl font-bold tracking-tight sm:text-4xl"
+              >
                 What is a Random Topic Generator?
               </h2>
               <div className="mt-6 max-w-[68ch] space-y-5 text-lg leading-relaxed text-[#525252]">
                 <p>
-                  A random topic generator is a brainstorming tool that turns a single subject into a
-                  list of specific ideas you could write, record, or teach about. You give it a
-                  starting point, like an industry, a product, or a keyword, and it suggests topics
+                  A random topic generator is a brainstorming tool that turns a
+                  single subject into a list of specific ideas you could write,
+                  record, or teach about. You give it a starting point, like an
+                  industry, a product, or a keyword, and it suggests topics
                   from angles you might not reach on your own.
                 </p>
                 <p>
-                  For content creators, it removes the hardest part of the job: deciding what to make
-                  next. Writer&apos;s block often isn&apos;t a lack of knowledge but a lack of a clear
-                  entry point, and a list of concrete titles gives you one. Seeing ideas side by side
-                  also makes it easier to notice which ones excite you and which ones your audience
-                  genuinely needs.
+                  For content creators, it removes the hardest part of the job:
+                  deciding what to make next. Writer&apos;s block often
+                  isn&apos;t a lack of knowledge but a lack of a clear entry
+                  point, and a list of concrete titles gives you one. Seeing
+                  ideas side by side also makes it easier to notice which ones
+                  excite you and which ones your audience genuinely needs.
                 </p>
                 <p>
-                  For SEO professionals, a generator is a fast way to widen the net before keyword
-                  research. It mixes formats such as how-to guides, comparisons, common mistakes,
-                  and beginner explainers, which helps you plan topic clusters around a core subject
+                  For SEO professionals, a generator is a fast way to widen the
+                  net before keyword research. It mixes formats such as how-to
+                  guides, comparisons, common mistakes, and beginner explainers,
+                  which helps you plan topic clusters around a core subject
                   rather than chasing one keyword at a time.
                 </p>
                 <p>
-                  Topicla uses AI to understand the context of your input, so the ideas stay relevant
-                  instead of being keyword shuffles. Each idea is tagged with a format and angle, so
-                  you can quickly tell whether it would work best as a blog post, a video, a
+                  Topicla uses AI to understand the context of your input, so
+                  the ideas stay relevant instead of being keyword shuffles. Each
+                  idea is tagged with a format and angle, so you can quickly
+                  tell whether it would work best as a blog post, a video, a
                   discussion prompt, or a downloadable resource.
                 </p>
               </div>
@@ -331,25 +469,39 @@ export default function RandomTopicGeneratorPage() {
               aria-label="Example of one idea in several formats"
               className="tp-reveal rounded-2xl border border-[#E5E7EB] bg-white p-6 lg:mt-16"
             >
-              <p className="text-sm font-medium text-[#525252]">One idea, many formats</p>
+              <p className="text-sm font-medium text-[#525252]">
+                One idea, many formats
+              </p>
               <p className="mt-2 text-lg font-semibold leading-snug">
                 7 Beginner Mistakes That Stall Home Workout Progress
               </p>
               <ul className="mt-5 space-y-3 text-[#525252]">
                 <li className="flex items-center gap-3">
-                  <FileText className="size-5 shrink-0 text-[#F97316]" aria-hidden="true" />
+                  <FileText
+                    className="size-5 shrink-0 text-[#F97316]"
+                    aria-hidden="true"
+                  />
                   A detailed blog post with fixes for each mistake
                 </li>
                 <li className="flex items-center gap-3">
-                  <PlaySquare className="size-5 shrink-0 text-[#F97316]" aria-hidden="true" />
+                  <PlaySquare
+                    className="size-5 shrink-0 text-[#F97316]"
+                    aria-hidden="true"
+                  />
                   A 10-minute video demonstrating correct form
                 </li>
                 <li className="flex items-center gap-3">
-                  <Layers className="size-5 shrink-0 text-[#F97316]" aria-hidden="true" />
+                  <Layers
+                    className="size-5 shrink-0 text-[#F97316]"
+                    aria-hidden="true"
+                  />
                   A carousel post, one mistake per slide
                 </li>
                 <li className="flex items-center gap-3">
-                  <ListChecks className="size-5 shrink-0 text-[#F97316]" aria-hidden="true" />
+                  <ListChecks
+                    className="size-5 shrink-0 text-[#F97316]"
+                    aria-hidden="true"
+                  />
                   A printable checklist for new members
                 </li>
               </ul>
@@ -358,17 +510,25 @@ export default function RandomTopicGeneratorPage() {
         </section>
 
         {/* 7. When to Use */}
-        <section aria-labelledby="when-heading" className="border-y border-[#E5E7EB] bg-[#FAFAFA] px-4 py-20 sm:px-6">
+        <section
+          aria-labelledby="when-heading"
+          className="border-y border-[#E5E7EB] bg-[#FAFAFA] px-4 py-20 sm:px-6"
+        >
           <div className="mx-auto max-w-6xl">
             <div className="tp-reveal max-w-2xl">
-              <h2 id="when-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2
+                id="when-heading"
+                className="text-3xl font-bold tracking-tight sm:text-4xl"
+              >
                 When to Use the Random Topic Generator?
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-[#525252]">
-                Generated ideas are starting points. Validate them with keyword data, audience
-                feedback, and your own expertise before investing time in full content.
+                Generated ideas are starting points. Validate them with keyword
+                data, audience feedback, and your own expertise before
+                investing time in full content.
               </p>
             </div>
+
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {useCases.map((item) => (
                 <article
@@ -378,8 +538,14 @@ export default function RandomTopicGeneratorPage() {
                   <span className="flex size-11 items-center justify-center rounded-xl bg-[#FFF7ED] text-[#EA580C] transition-colors duration-300 group-hover:bg-[#F97316] group-hover:text-white motion-reduce:transition-none">
                     <item.icon className="size-5" aria-hidden="true" />
                   </span>
-                  <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
-                  <p className="mt-2 leading-relaxed text-[#525252]">{item.text}</p>
+
+                  <h3 className="mt-5 text-xl font-semibold">
+                    {item.title}
+                  </h3>
+
+                  <p className="mt-2 leading-relaxed text-[#525252]">
+                    {item.text}
+                  </p>
                 </article>
               ))}
             </div>
@@ -387,11 +553,18 @@ export default function RandomTopicGeneratorPage() {
         </section>
 
         {/* 8. FAQ */}
-        <section aria-labelledby="faq-heading" className="px-4 py-20 sm:px-6">
+        <section
+          aria-labelledby="faq-heading"
+          className="px-4 py-20 sm:px-6"
+        >
           <div className="mx-auto max-w-3xl">
-            <h2 id="faq-heading" className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2
+              id="faq-heading"
+              className="tp-reveal text-center text-3xl font-bold tracking-tight sm:text-4xl"
+            >
               Frequently Asked Questions
             </h2>
+
             <div className="mt-10">
               <FAQ items={faqs} />
             </div>

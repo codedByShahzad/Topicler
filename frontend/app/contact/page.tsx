@@ -4,35 +4,43 @@ import ContactPageSection from "@/src/sections/ContactPageSection";
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
 
-  title: "Contact Topicler | Get in Touch",
+  title: "Contact Topicler | Questions, Feedback & Support",
 
   description:
-    "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
+    "Contact Topicler with questions, feedback, suggestions, or support requests about our idea discovery and topic generation tools.",
 
   keywords: [
     "Contact Topicler",
     "Topicler contact",
-    "Topicler feedback",
     "Topicler support",
+    "Topicler feedback",
     "Topicler questions",
+    "Topicler suggestions",
     "Topicler tools",
-    "contact Topicler team",
+    "Topicler support team",
   ],
+
+  authors: [
+    {
+      name: "Topicler",
+      url: "https://topicler.com",
+    },
+  ],
+
+  creator: "Topicler",
+  publisher: "Topicler",
+  category: "Contact",
 
   alternates: {
     canonical: "/contact",
   },
 
   openGraph: {
-    title: "Contact Topicler | Get in Touch",
-
+    title: "Contact Topicler | Questions, Feedback & Support",
     description:
-      "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
-
+      "Get in touch with Topicler for questions, feedback, suggestions, or support related to our tools and resources.",
     url: "https://topicler.com/contact",
-
     siteName: "Topicler",
-
     images: [
       {
         url: "https://topicler.com/images/ogImage.png",
@@ -41,27 +49,21 @@ export const metadata: Metadata = {
         alt: "Contact Topicler",
       },
     ],
-
     locale: "en_US",
-
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "Contact Topicler | Get in Touch",
-
+    title: "Contact Topicler | Questions, Feedback & Support",
     description:
-      "Have a question, suggestion, or feedback about Topicler? Get in touch with us and share your thoughts.",
-
+      "Get in touch with Topicler for questions, feedback, suggestions, or support about our tools and resources.",
     images: ["https://topicler.com/images/ogImage.png"],
   },
 
   robots: {
     index: true,
     follow: true,
-
     googleBot: {
       index: true,
       follow: true,

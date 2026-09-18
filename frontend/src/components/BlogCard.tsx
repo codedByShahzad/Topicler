@@ -1,18 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Clock, ArrowUpRight } from "lucide-react";
+import type { StaticImageData } from "next/image";
 
 type BlogCardProps = {
   slug: string;
   title: string;
   subtitle: string;
-  heroImage: string;
+  heroImage: string | StaticImageData;
   category: string;
   publishDate: string;
   readingTime: string;
   priority?: boolean;
 };
-
 const normalizeCategory = (category?: string) => {
   if (!category) return "";
 
@@ -31,14 +31,21 @@ const normalizeCategory = (category?: string) => {
 };
 
 const categoryStyles: Record<string, string> = {
-  Politics: "border-[#dc2626]/25 bg-[#fef2f2] text-[#dc2626]",
-  Finance: "border-[#2563eb]/25 bg-[#eff6ff] text-[#2563eb]",
-  "Real Estate": "border-[#92400e]/25 bg-[#fef3c7] text-[#92400e]",
-  Technology: "border-[#7c3aed]/25 bg-[#f5f3ff] text-[#7c3aed]",
-  Plumbing: "border-[#0891b2]/25 bg-[#ecfeff] text-[#0891b2]",
-  Health: "border-[#16a34a]/25 bg-[#f0fdf4] text-[#16a34a]",
-  "Digital Marketing": "border-[#c026d3]/25 bg-[#fdf4ff] text-[#c026d3]",
-  "Home Improvements": "border-[#0f766e]/25 bg-[#f0fdfa] text-[#0f766e]",
+  "Topic Ideas": "border-[#dc2626]/25 bg-[#fef2f2] text-[#dc2626]",
+
+  "Content Ideas": "border-[#2563eb]/25 bg-[#eff6ff] text-[#2563eb]",
+
+  "Idea Generation": "border-[#92400e]/25 bg-[#fef3c7] text-[#92400e]",
+
+  "Content Creation": "border-[#7c3aed]/25 bg-[#f5f3ff] text-[#7c3aed]",
+
+  "SEO & Content": "border-[#0891b2]/25 bg-[#ecfeff] text-[#0891b2]",
+
+  "Writing & Ideas": "border-[#16a34a]/25 bg-[#f0fdf4] text-[#16a34a]",
+
+  "Productivity": "border-[#c026d3]/25 bg-[#fdf4ff] text-[#c026d3]",
+
+  "Topicler Guides": "border-[#0f766e]/25 bg-[#f0fdfa] text-[#0f766e]",
 };
 
 const CategoryPill = ({ category }: { category: string }) => {

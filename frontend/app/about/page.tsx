@@ -15,30 +15,43 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
 
-  title: "About Topicler | Discover Better Ideas",
+  title: "About Topicler | Idea & Content Discovery Tools",
 
   description:
-    "Learn more about Topicler, a modern platform built to help you discover ideas, generate topics, and explore useful tools.",
+    "Learn about Topicler, a platform built to help you discover ideas, generate topics, and explore simple tools for content creation and research.",
 
   keywords: [
     "Topicler",
+    "about Topicler",
     "Topicler tools",
+    "idea discovery tools",
     "topic generator",
     "random topic generator",
-    "content ideas",
-    "idea generator",
     "topic ideas",
+    "content ideas",
     "content creation tools",
+    "idea generator",
   ],
+
+  authors: [
+    {
+      name: "Topicler",
+      url: "https://topicler.com",
+    },
+  ],
+
+  creator: "Topicler",
+  publisher: "Topicler",
+  category: "Tools",
 
   alternates: {
     canonical: "/about",
   },
 
   openGraph: {
-    title: "About Topicler | Discover Better Ideas",
+    title: "About Topicler | Idea & Content Discovery Tools",
     description:
-      "Discover Topicler, a modern platform designed to make finding ideas and generating topics simple.",
+      "Learn about Topicler and discover simple tools designed to help you find ideas, generate topics, and explore new possibilities.",
     url: "https://topicler.com/about",
     siteName: "Topicler",
     images: [
@@ -55,9 +68,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "About Topicler | Discover Better Ideas",
+    title: "About Topicler | Idea & Content Discovery Tools",
     description:
-      "Discover Topicler, a modern platform for discovering ideas and useful tools.",
+      "Learn about Topicler and explore simple tools for discovering ideas and generating useful topics.",
     images: ["https://topicler.com/images/ogImage.png"],
   },
 
@@ -73,7 +86,6 @@ export const metadata: Metadata = {
     },
   },
 };
-
 /* =========================================================
    DATA
 ========================================================= */

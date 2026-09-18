@@ -28,7 +28,7 @@ export default function Navbar() {
   const navLinks: NavLink[] = useMemo(
     () => [
       { label: "Home", href: "/" },
-      { label: "Blogs", href: "/blog" },
+      { label: "Blogs", href: "/blogs" },
       { label: "About", href: "/about" },
       { label: "Connect", href: "/contact" },
     ],
@@ -80,7 +80,10 @@ export default function Navbar() {
         setDesktopSearchOpen(false);
       }
 
-      if (mobileSearchRef.current && !mobileSearchRef.current.contains(target)) {
+      if (
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(target)
+      ) {
         setMobileSearchOpen(false);
       }
     }
@@ -109,7 +112,7 @@ export default function Navbar() {
     const query = desktopSearch.trim();
     if (!query) return;
 
-    router.push(`/blog?search=${encodeURIComponent(query)}`);
+    router.push(`/blogs?search=${encodeURIComponent(query)}`);
     setDesktopSearchOpen(false);
   };
 
@@ -118,28 +121,28 @@ export default function Navbar() {
     const query = mobileSearch.trim();
     if (!query) return;
 
-    router.push(`/blog?search=${encodeURIComponent(query)}`);
+    router.push(`/blogs?search=${encodeURIComponent(query)}`);
     setMobileMenuOpen(false);
     setMobileSearchOpen(false);
   };
 
   const isActive = (href: string) => {
-  if (href === "/") {
-    return (
-      pathname === "/" ||
-      pathname === "/tools/random-topic-generator" ||
-      pathname.startsWith("/tools/random-topic-generator/")
-    );
-  }
+    if (href === "/") {
+      return (
+        pathname === "/" ||
+        pathname === "/tools/random-topic-generator" ||
+        pathname.startsWith("/tools/random-topic-generator/")
+      );
+    }
 
-  return pathname === href || pathname.startsWith(`${href}/`);
-};
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
-    <header className="sticky top-2 z-50 w-full bg-white px-3 pb-2 pt-[3px] sm:px-5 lg:px-6 xl:px-8">
+    <header className="sticky top-0 z-50 w-full bg-white px-3 pb-2 pt-[3px] sm:px-5 lg:px-6 xl:px-8">
       <div className="relative mx-auto max-w-[1440px]">
-        {/* Floating pill */}
-        <div className="flex items-center justify-between gap-4 rounded-full border border-slate-200/80 bg-white px-4 py-2 shadow-[0_6px_24px_-14px_rgba(11,18,32,0.35)] sm:px-5 lg:px-6">
+        {/* Simple navbar */}
+        <div className="flex items-center justify-between gap-4 bg-white px-4 py-2 sm:px-5 lg:px-6">
           <Link href="/" className="flex shrink-0 items-center">
             <Image
               src="/images/logo.png"
@@ -203,7 +206,7 @@ export default function Navbar() {
                         key={blog.slug}
                         type="button"
                         onClick={() => {
-                          router.push(`/blog/${blog.slug}`);
+                          router.push(`/blogs/${blog.slug}`);
                           setDesktopSearch("");
                           setDesktopSearchOpen(false);
                         }}
@@ -222,7 +225,7 @@ export default function Navbar() {
                       type="button"
                       onClick={() => {
                         router.push(
-                          `/blog?search=${encodeURIComponent(desktopSearch.trim())}`
+                          `/blogs?search=${encodeURIComponent(desktopSearch.trim())}`
                         );
                         setDesktopSearchOpen(false);
                       }}
@@ -251,7 +254,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile panel — anchored under the floating pill */}
+        {/* Mobile panel — anchored under the navbar */}
         <div
           className={`absolute inset-x-0 top-full z-40 mt-2 rounded-3xl border border-slate-200 bg-white shadow-xl transition-all duration-300 lg:hidden ${
             mobileMenuOpen
@@ -287,7 +290,7 @@ export default function Navbar() {
                           key={blog.slug}
                           type="button"
                           onClick={() => {
-                            router.push(`/blog/${blog.slug}`);
+                            router.push(`/blogs/${blog.slug}`);
                             setMobileSearch("");
                             setMobileMenuOpen(false);
                             setMobileSearchOpen(false);
@@ -307,7 +310,7 @@ export default function Navbar() {
                         type="button"
                         onClick={() => {
                           router.push(
-                            `/blog?search=${encodeURIComponent(mobileSearch.trim())}`
+                            `/blogs?search=${encodeURIComponent(mobileSearch.trim())}`
                           );
                           setMobileMenuOpen(false);
                           setMobileSearchOpen(false);

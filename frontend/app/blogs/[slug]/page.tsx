@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import type { StaticImageData } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, Clock, Folder, ArrowUpRight } from "lucide-react";
@@ -21,10 +22,21 @@ function toISODateSafe(dateStr?: string) {
   return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
 }
 
-function absoluteUrl(path?: string) {
+function absoluteUrl(path?: string | StaticImageData) {
   if (!path) return `${SITE_URL}/images/ogImage.jpg`;
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+
+  const imagePath = typeof path === "string" ? path : path.src;
+
+  if (
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://")
+  ) {
+    return imagePath;
+  }
+
+  return `${SITE_URL}${
+    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+  }`;
 }
 
 export async function generateMetadata({
@@ -38,75 +50,117 @@ export async function generateMetadata({
   if (!blog) {
     return {
       metadataBase: new URL(SITE_URL),
+
       title: "Blog Not Found | Topicler",
+
       description:
-        "The requested blog could not be found on Topicler. Explore the latest articles on politics, finance, real estate, technology, plumbing, digital marketing, health, and home improvements.",
-      alternates: { canonical: "/blog" },
-      robots: { index: false, follow: false },
+        "The requested article could not be found on Topicler. Explore our resources for useful guides, insights, and ideas.",
+
+      alternates: {
+        canonical: "/blog",
+      },
+
+      robots: {
+        index: false,
+        follow: false,
+      },
+
       openGraph: {
         title: "Blog Not Found | Topicler",
+
         description:
-          "The requested blog could not be found on Topicler. Explore the latest articles across multiple categories.",
+          "The requested article could not be found on Topicler. Explore our resources for useful guides, insights, and ideas.",
+
         url: `${SITE_URL}/blog`,
+
         siteName: "Topicler",
+
         type: "website",
+
         locale: "en_US",
+
         images: [
           {
             url: `${SITE_URL}/images/ogImage.jpg`,
             width: 1200,
             height: 630,
-            alt: "Topicler",
+            alt: "Topicler Resources",
           },
         ],
       },
+
       twitter: {
         card: "summary_large_image",
+
         title: "Blog Not Found | Topicler",
+
         description:
-          "Explore the latest articles on Topicler across politics, finance, technology, and more.",
+          "Explore useful guides, insights, and ideas from Topicler.",
+
         images: [`${SITE_URL}/images/ogImage.jpg`],
       },
     };
   }
 
   const title = blog.seoTitle ?? `${blog.title} | Topicler`;
+
   const description =
     blog.seoDescription ??
     blog.subtitle ??
-    `Read ${blog.title} on Topicler and explore more insights in ${blog.category}.`;
-  const canonicalPath = blog.canonicalPath ?? `/blog/${blog.slug}`;
+    `Read ${blog.title} on Topicler for useful insights, ideas, and information about ${blog.category}.`;
+
+  const canonicalPath =
+    blog.canonicalPath ?? `/blog/${blog.slug}`;
+
   const image = absoluteUrl(
-    blog.ogImage ?? blog.heroImage ?? "/images/ogImage.jpg"
+    blog.ogImage ??
+      blog.heroImage ??
+      "/images/ogImage.jpg"
   );
 
   const publishedTime =
-    blog.publishISO ?? toISODateSafe(blog.publishDate) ?? undefined;
+    blog.publishISO ??
+    toISODateSafe(blog.publishDate) ??
+    undefined;
 
   return {
     metadataBase: new URL(SITE_URL),
+
     title,
+
     description,
+
     keywords: blog.keywords ?? [
       "Topicler",
-      "blog",
-      blog.category,
-      `${blog.category} blog`,
-      `${blog.category} article`,
       blog.title,
-      "politics blogs",
-      "finance blogs",
-      "real estate blogs",
-      "technology blogs",
-      "plumbing blogs",
-      "digital marketing blogs",
-      "health blogs",
-      "home improvement blogs",
+      blog.category,
+      `${blog.category} guide`,
+      `${blog.category} insights`,
+      `${blog.category} ideas`,
+      "Topicler resources",
+      "helpful guides",
+      "useful articles",
     ],
-    alternates: { canonical: canonicalPath },
+
+    authors: [
+      {
+        name: "Topicler",
+        url: SITE_URL,
+      },
+    ],
+
+    creator: "Topicler",
+
+    publisher: "Topicler",
+
+    alternates: {
+      canonical: canonicalPath,
+    },
+
     robots: {
       index: true,
       follow: true,
+
       googleBot: {
         index: true,
         follow: true,
@@ -115,23 +169,45 @@ export async function generateMetadata({
         "max-video-preview": -1,
       },
     },
+
     category: blog.category,
+
     openGraph: {
       type: "article",
+
       siteName: "Topicler",
+
       url: `${SITE_URL}${canonicalPath}`,
+
       title,
+
       description,
+
       locale: "en_US",
-      images: [{ url: image, width: 1200, height: 630, alt: title }],
+
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+
       publishedTime,
+
       section: blog.category,
+
       tags: blog.keywords,
     },
+
     twitter: {
       card: "summary_large_image",
+
       title,
+
       description,
+
       images: [image],
     },
   };

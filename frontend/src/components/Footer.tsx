@@ -15,7 +15,7 @@ const toolLinks = [
 ];
 
 const resourceLinks = [
-  { label: "Blog", href: "/blog" },
+  { label: "Blogs", href: "/blogs" },
   { label: "About", href: "/about" },
   { label: "Connect", href: "/contact" },
 ];
@@ -155,7 +155,7 @@ const Footer = () => {
                     <Mail className="h-4 w-4 text-[#FF5A14]" />
                   </span>
 
-                  <span>hello@topicler.com</span>
+                  <span>contact@topicler.com</span>
                 </a>
 
                 <p className="mt-4 max-w-xs text-sm leading-6 text-slate-500">

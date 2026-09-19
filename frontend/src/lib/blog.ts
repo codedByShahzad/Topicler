@@ -253,23 +253,31 @@ export const BLOGS: BlogPost[] = [
       content: [
         {
           type: "p",
-          text: "1- A topic that feels exciting on Monday can waste your whole Tuesday. Run each idea through five quick questions before you open a document ?",
+          text: "A topic that feels exciting on Monday can waste your whole Tuesday. Run each idea through five quick questions before you open a document ?",
         },
         {
           type: "p",
-          text: "2- Can you name the one person reading it? \"Bloggers\" is not a person. \"A blogger with 40 posts and no traffic\" is ?",
+          text: "1. Can you name the one person reading it? \"Bloggers\" is not a person. \"A blogger with 40 posts and no traffic\" is ?",
         },
         {
           type: "p",
-          text: "3- Can you say the answer in a single sentence? If the answer needs a paragraph, the topic is really three topics wearing one title ?",
+          text: "2. Can you say the answer in a single sentence? If the answer needs a paragraph, the topic is really three topics wearing one title ?",
         },
         {
           type: "p",
-          text: "4- Do you have something specific to add, like a number, a screenshot, a mistake, or a client story? Without that, you're rewriting what already ranks ?",
+          text: "3. Do you have something specific to add, like a number, a screenshot, a mistake, or a client story? Without that, you're rewriting what already ranks ?",
         },
         {
           type: "p",
-          text: "5- Is anyone actually searching for this or asking about it? A clever angle nobody wants is still a clever angle nobody wants ?",
+          text: "4. Is anyone actually searching for this or asking about it? A clever angle nobody wants is still a clever angle nobody wants ?",
+        },
+        {
+          type: "p",
+          text: "5. Does it connect to what you sell, teach, or want to be known for? Traffic that never turns into anything gets tiring to produce ?",
+        },
+        {
+          type: "p",
+          text: "Three yeses and the topic is worth writing. Fewer than three and it goes back on the list for later.",
         },
       ],
     },

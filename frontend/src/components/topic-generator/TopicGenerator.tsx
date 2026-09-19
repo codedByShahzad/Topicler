@@ -71,7 +71,7 @@ export default function TopicGenerator() {
     }
 
     try {
-      const res = await fetch("/api/generate-topics", {
+      const res = await fetch("https://gemini-api-lime.vercel.app/api/generate-topics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

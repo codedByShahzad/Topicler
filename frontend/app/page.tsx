@@ -1,89 +1,37 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "./layout";
+
 import { redirect } from "next/navigation";
 
+// The "%s | Topicler" template is defined in app/layout.tsx, which is the SAME
+// route segment as this file. Next.js does not apply a template to its own
+// segment, so this title renders exactly as written — no brand suffix is added.
+// Verify in View Source after deploy.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topicler.com"),
-
-  title: "Random Topic Generator | Generate Topics Instantly",
+  title: "Topicler — Free AI Topic Generators for Writers & Creators",
 
   description:
-    "Generate random topics instantly with Topicler. Get creative topic ideas, writing prompts, discussion topics, and content ideas for free.",
+    "Stuck for ideas? Topicler's free AI tools generate fresh topics for essays, " +
+    "blogs, videos, debates and conversations — ten ideas in one click, no sign-up.",
 
-  keywords: [
-    "Topicler",
-    "random topic generator",
-    "random topic generator online",
-    "random topics",
-    "topic generator",
-    "topic ideas",
-    "random topic ideas",
-    "content ideas",
-    "writing prompts",
-    "creative writing topics",
-    "discussion topics",
-    "interesting topics",
-    "blog topic ideas",
-    "free topic generator",
-    "generate random topics",
-  ],
-
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
 
   openGraph: {
-    title: "Random Topic Generator | Generate Topics Instantly",
-
+    url: `${SITE_URL}/`,
+    title: "Topicler — Free AI Topic Generators for Writers & Creators",
     description:
-      "Generate random topics instantly with Topicler. Discover creative ideas, writing prompts, discussion topics, and content ideas for free.",
-
-    url: "https://topicler.com",
-
-    siteName: "Topicler",
-
-    images: [
-      {
-        url: "https://topicler.com/images/ogImage.png",
-        width: 1200,
-        height: 630,
-        alt: "Topicler Random Topic Generator",
-      },
-    ],
-
-    locale: "en_US",
-
-    type: "website",
+      "Free AI tools that generate fresh topics for essays, blogs, videos, " +
+      "debates and conversations. Ten ideas in one click.",
   },
 
   twitter: {
-    card: "summary_large_image",
-
-    title: "Random Topic Generator | Topicler",
-
+    title: "Topicler — Free AI Topic Generators",
     description:
-      "Generate random topics, writing prompts, creative ideas, and content topics instantly with Topicler.",
-
-    images: ["https://topicler.com/images/ogImage.png"],
+      "Fresh topics for essays, blogs, videos, debates and conversations. " +
+      "Free, no sign-up.",
   },
-
-  robots: {
-    index: true,
-    follow: true,
-
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-
-  icons: {
-    icon: "/favicon.ico",
-  },
-
-  category: "technology",
 };
+
 
 export default function HomePage() {
   redirect("/tools/random-topic-generator");

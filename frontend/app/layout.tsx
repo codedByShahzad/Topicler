@@ -24,89 +24,56 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const SITE_URL = "https://topicler.com";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topicler.com"),
+  metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Topicler – Random Topic Generator & Topic Ideas",
+    default: "Topicler — Free AI Topic Generators for Writers & Creators",
     template: "%s | Topicler",
   },
 
   description:
-    "Topicler is a free online tool for generating random topics, content ideas, writing prompts, and creative ideas across multiple categories.",
+    "Topicler's free AI tools generate fresh topics for essays, blogs, videos, " +
+    "debates and conversations — ten ideas in one click, no sign-up.",
 
   applicationName: "Topicler",
 
-  keywords: [
-    "Topicler",
-    "random topic generator",
-    "random topics",
-    "topic generator",
-    "topic ideas",
-    "random topic ideas",
-    "content ideas",
-    "writing prompts",
-    "creative ideas",
-    "blog topic ideas",
-    "discussion topics",
-    "interesting topics",
-    "content topic generator",
-    "free topic generator",
-  ],
-
-  authors: [
-    {
-      name: "Topicler",
-      url: "https://topicler.com",
-    },
-  ],
-
-  creator: "Topicler",
+  // Named human beats brand-as-author for E-E-A-T. Point at the About page.
+  authors: [{ name: "Shahzad", url: `${SITE_URL}/about/` }],
+  creator: "Shahzad",
   publisher: "Topicler",
 
-  alternates: {
-    canonical: "/",
-  },
+  // NOTE: deliberately NO `alternates` here. A canonical set in the root layout
+  // is inherited by every child page that forgets to set its own, which would
+  // make that page claim "/" as its canonical. Set canonical per page only.
 
   openGraph: {
-    title: "Topicler – Random Topic Generator & Topic Ideas",
-
-    description:
-      "Generate random topics, content ideas, writing prompts, and creative ideas instantly with Topicler.",
-
-    url: "https://topicler.com",
-
+    type: "website",
     siteName: "Topicler",
-
+    locale: "en_US",
+    // NOTE: deliberately NO `url` here, for the same inheritance reason.
+    // A missing og:url is better than a wrong one. Every page sets its own.
     images: [
       {
-        url: "https://topicler.com/images/ogImage.png",
+        url: "/images/ogImage.png",
         width: 1200,
         height: 630,
-        alt: "Topicler – Random Topic Generator and Topic Ideas",
+        alt: "Topicler — free AI topic generators",
       },
     ],
-
-    locale: "en_US",
-
-    type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "Topicler – Random Topic Generator & Topic Ideas",
-
-    description:
-      "Generate random topics, writing prompts, content ideas, and creative ideas instantly with Topicler.",
-
-    images: ["https://topicler.com/images/ogImage.png"],
+    images: ["/images/ogImage.png"],
+    // Add `site: "@handle"` only once a real account exists. Do not invent one.
   },
 
   robots: {
     index: true,
     follow: true,
-
     googleBot: {
       index: true,
       follow: true,
@@ -117,9 +84,11 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/images/logo.png",
-    shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: "/favicon.ico",
+    // TODO: generate and add once the files exist —
+    // apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+    // and 192 / 512 PNGs for the web manifest.
+    // Do not reference icon files that are not in /public — they 404.
   },
 };
 

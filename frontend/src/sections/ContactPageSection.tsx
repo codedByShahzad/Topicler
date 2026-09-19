@@ -9,38 +9,72 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   ArrowRight,
   Check,
+  CheckCircle2,
   Clock3,
   Mail,
   MessageSquare,
   Send,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
 type Status = "idle" | "sending" | "success" | "error";
 
+const MESSAGE_LIMIT = 2000;
+const CONTACT_EMAIL = "contact@topicler.com";
+
 /* =========================================================
    CONTACT INFORMATION
+
+   Three real answers to the three questions people actually
+   have before writing: where does this go, when do I hear
+   back, and what should I include.
 ========================================================= */
 
 const contactCards = [
   {
     icon: Mail,
-    title: "Email",
-    value: "contact@topicler.com",
-    text: "For general questions, feedback, suggestions, and support.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Feedback",
-    value: "Share your thoughts",
-    text: "Tell us what you like, what can improve, or what you want to see.",
+    title: "Where it goes",
+    value: CONTACT_EMAIL,
+    text: "Every message lands in one inbox, read by the person who builds Topicler.",
   },
   {
     icon: Clock3,
-    title: "Response",
+    title: "When you hear back",
     value: "24–48 hours",
-    text: "We aim to review and respond to messages as quickly as possible.",
+    text: "Usually sooner. If something is broken, say so in the subject and it jumps the queue.",
   },
+  {
+    icon: ShieldCheck,
+    title: "What to include",
+    value: "Browser and steps",
+    text: "For a bug, what you did and what happened. For an idea, what you were trying to do.",
+  },
+];
+
+const nextSteps = [
+  {
+    number: "01",
+    title: "You send the form",
+    text: "It goes straight to the Topicler inbox — no ticketing system in between.",
+  },
+  {
+    number: "02",
+    title: "It gets read",
+    text: "Every message is read by a person, not sorted by a bot.",
+  },
+  {
+    number: "03",
+    title: "You get a reply",
+    text: "Usually within a day or two, to the address you enter below.",
+  },
+];
+
+const topics = [
+  "Something is broken",
+  "An idea for a new tool",
+  "Feedback on what exists",
+  "Anything else",
 ];
 
 /* =========================================================
@@ -49,12 +83,12 @@ const contactCards = [
 
 function SectionLabel({ title }: { title: string }) {
   return (
-    <div className="mb-5 flex items-center gap-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#FFD8C7] bg-[#FFF4EE]">
-        <Sparkles className="h-4 w-4 text-[#FF5A14]" />
-      </div>
+    <div className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#FFD8C7] bg-[#FFF4EE] py-1.5 pl-2 pr-4">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white">
+        <Sparkles className="h-3.5 w-3.5 text-[#C63D08]" />
+      </span>
 
-      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5A14] sm:text-[11px]">
+      <span className="text-[13px] font-semibold text-[#C63D08]">
         {title}
       </span>
     </div>
@@ -74,51 +108,55 @@ export default function ContactPageSection() {
     message: "",
   });
 
+  /*
+    Honeypot. Bots fill every field they find; people never see this one.
+    Kept out of formData so it can never be sent in the template params.
+  */
+  const [website, setWebsite] = useState("");
+
   const [status, setStatus] = useState<Status>("idle");
 
   const isSending = status === "sending";
+  const isSuccess = status === "success";
 
   /* =========================================================
      EMAILJS CONFIG
-     
+
      These values should exist in your .env.local:
-     
+
      NEXT_PUBLIC_EMAILJS_SERVICE_ID=...
      NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=...
      NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=...
+
+     The EmailJS public key is designed to be public, so this is not a
+     credential leak. Do lock it down in the EmailJS dashboard by adding
+     topicler.com to the allowed domains, or anyone can send through it.
   ========================================================= */
 
-  const serviceId =
-    process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
-
-  const templateId =
-    process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "";
-
-  const publicKey =
-    process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
+  const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
+  const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "";
+  const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
 
   /* =========================================================
      INPUT CHANGE
   ========================================================= */
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear a previous error as soon as the person starts fixing things.
+    if (status === "error") setStatus("idle");
   };
 
   /* =========================================================
-     CLEAR FORM
+     RESET
   ========================================================= */
 
-  const clearForm = () => {
+  const resetFields = () => {
     setFormData({
       firstName: "",
       lastName: "",
@@ -126,229 +164,207 @@ export default function ContactPageSection() {
       subject: "",
       message: "",
     });
+    setWebsite("");
+  };
 
+  const clearForm = () => {
+    resetFields();
     setStatus("idle");
   };
 
   /* =========================================================
-     SUBMIT FORM
+     SUBMIT
   ========================================================= */
 
-  const handleSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    /* -------------------------------------------------------
-       Check EmailJS environment variables
-    ------------------------------------------------------- */
+    // Honeypot tripped — act as though it worked and send nothing.
+    if (website.trim()) {
+      resetFields();
+      setStatus("success");
+      return;
+    }
 
     if (!serviceId || !templateId || !publicKey) {
       setStatus("error");
-
       toast.error(
-        "Email service is not configured correctly. Please try again later."
+        "The email service is not configured. Please write to " +
+          CONTACT_EMAIL +
+          " directly."
       );
-
       return;
     }
 
     setStatus("sending");
 
     try {
-      /* -----------------------------------------------------
-         EmailJS template parameters
-
-         IMPORTANT:
-         All submitted messages are sent to:
-
-         contact@topicler.com
-      ----------------------------------------------------- */
-
       const templateParams = {
-        from_name:
-          `${formData.firstName} ${formData.lastName}`.trim(),
-
+        from_name: `${formData.firstName} ${formData.lastName}`.trim(),
         first_name: formData.firstName,
-
         last_name: formData.lastName,
-
         from_email: formData.email,
-
         reply_to: formData.email,
-
         subject: formData.subject,
-
         message: formData.message,
-
-        to_email: "contact@topicler.com",
+        to_email: CONTACT_EMAIL,
       };
 
-      /* -----------------------------------------------------
-         Send email
-      ----------------------------------------------------- */
+      await emailjs.send(serviceId, templateId, templateParams, {
+        publicKey,
+      });
 
-      await emailjs.send(
-        serviceId,
-        templateId,
-        templateParams,
-        {
-          publicKey,
-        }
-      );
-
-      /* -----------------------------------------------------
-         Success
-      ----------------------------------------------------- */
-
-      clearForm();
-
+      resetFields();
       setStatus("success");
-
-      toast.success(
-        "Message sent successfully. We’ll get back to you soon."
-      );
+      toast.success("Message sent. You will hear back within a day or two.");
     } catch (error: unknown) {
-      console.error(
-        "Topicler contact form error:",
-        error
-      );
+      console.error("Topicler contact form error:", error);
 
       let errorMessage =
-        "Failed to send your message. Please try again.";
+        "That did not send. Please try again, or write to " +
+        CONTACT_EMAIL +
+        " directly.";
 
-      if (
-        error &&
-        typeof error === "object" &&
-        "text" in error
-      ) {
-        errorMessage =
-          String(
-            (error as { text?: string }).text ||
-              errorMessage
-          );
+      if (error && typeof error === "object" && "text" in error) {
+        errorMessage = String(
+          (error as { text?: string }).text || errorMessage
+        );
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
 
       setStatus("error");
-
       toast.error(errorMessage);
-    } finally {
-      setStatus("idle");
     }
+
+    /*
+      No `finally` block here on purpose. The previous version reset the
+      status to "idle" in `finally`, which ran immediately after the success
+      and error branches and wiped the state they had just set — so "success"
+      and "error" never survived to a render.
+    */
   };
+
+  const inputClass =
+    "h-14 w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 text-sm text-[#0B1220] outline-none transition-[border-color,background-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.10]";
 
   return (
     <main className="overflow-hidden bg-white text-[#0B1220]">
 
       {/* =====================================================
-          ANIMATIONS
+          ANIMATION SYSTEM
+
+          Matches the About page exactly so the two feel like one site.
+
+            .tp-in*  page-load sequence for the hero
+            .tp-rv*  scroll-linked reveal below the fold
+
+          Smoothness comes from: translate3d keyframes (own compositor
+          layer, no layout or paint), expo-out easing, short 14-20px
+          travel, wide scroll ranges, and slow low-amplitude ambient loops.
+
+          Stagger uses animation-range, not animation-delay — delays in
+          seconds are ignored on a scroll timeline, which is why the
+          inline animationDelay on the cards below never did anything.
       ===================================================== */}
 
       <style>{`
-        @keyframes topiclerReveal {
-          from {
-            opacity: 0;
-            transform: translateY(24px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        @keyframes tpRise {
+          from { opacity: 0; transform: translate3d(0, 16px, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
-        @keyframes topiclerRevealLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-24px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+        @keyframes tpFadeUp {
+          from { opacity: 0; transform: translate3d(0, 18px, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
-        @keyframes topiclerRevealRight {
-          from {
-            opacity: 0;
-            transform: translateX(24px);
-          }
-
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+        @keyframes tpFadeLeft {
+          from { opacity: 0; transform: translate3d(-20px, 0, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
-        @keyframes topiclerFloat {
-          0%,
-          100% {
-            transform: translate3d(0, 0, 0);
-          }
-
-          50% {
-            transform: translate3d(0, -8px, 0);
-          }
+        @keyframes tpFadeRight {
+          from { opacity: 0; transform: translate3d(20px, 0, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
-        @keyframes topiclerPulse {
-          0%,
-          100% {
-            opacity: 0.35;
-            transform: scale(1);
-          }
-
-          50% {
-            opacity: 0.55;
-            transform: scale(1.08);
-          }
+        @keyframes tpDrift {
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50%      { transform: translate3d(0, -6px, 0); }
         }
 
-        .topicler-reveal {
-          animation: topiclerReveal linear both;
+        @keyframes tpGlow {
+          0%, 100% { opacity: 0.40; transform: scale(1); }
+          50%      { opacity: 0.55; transform: scale(1.04); }
+        }
+
+        @keyframes tpPop {
+          from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.98); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        /* ---- Hero load sequence ---- */
+
+        .tp-in {
+          animation: tpRise 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+          backface-visibility: hidden;
+        }
+
+        .tp-in-1 { animation-delay: 0.06s; }
+        .tp-in-2 { animation-delay: 0.18s; }
+        .tp-in-3 { animation-delay: 0.30s; }
+        .tp-in-4 { animation-delay: 0.42s; }
+
+        /* ---- Scroll reveal ---- */
+
+        .tp-rv,
+        .tp-rv-l,
+        .tp-rv-r {
+          animation: tpFadeUp linear both;
           animation-timeline: view();
-          animation-range: entry 0% cover 28%;
+          animation-range: entry 5% cover 42%;
+          backface-visibility: hidden;
         }
 
-        .topicler-reveal-left {
-          animation: topiclerRevealLeft linear both;
-          animation-timeline: view();
-          animation-range: entry 0% cover 30%;
-        }
+        .tp-rv-l { animation-name: tpFadeLeft; }
+        .tp-rv-r { animation-name: tpFadeRight; }
 
-        .topicler-reveal-right {
-          animation: topiclerRevealRight linear both;
-          animation-timeline: view();
-          animation-range: entry 0% cover 30%;
-        }
-
-        .topicler-float {
-          animation: topiclerFloat 6s ease-in-out infinite;
-        }
-
-        .topicler-pulse {
-          animation: topiclerPulse 6s ease-in-out infinite;
-        }
+        /* Stagger — declared after the base so it wins on equal specificity. */
+        .tp-s1 { animation-range: entry 5% cover 48%; }
+        .tp-s2 { animation-range: entry 5% cover 54%; }
+        .tp-s3 { animation-range: entry 5% cover 60%; }
 
         @supports not (animation-timeline: view()) {
-          .topicler-reveal,
-          .topicler-reveal-left,
-          .topicler-reveal-right {
-            animation-duration: 0.7s;
-            animation-fill-mode: both;
+          .tp-rv,
+          .tp-rv-l,
+          .tp-rv-r {
+            animation-duration: 0.95s;
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
           }
+
+          .tp-s1 { animation-delay: 0.10s; }
+          .tp-s2 { animation-delay: 0.20s; }
+          .tp-s3 { animation-delay: 0.30s; }
         }
 
+        /* ---- Ambient + state ---- */
+
+        .tp-drift { animation: tpDrift 10s ease-in-out infinite; }
+        .tp-glow  { animation: tpGlow 16s ease-in-out infinite; }
+        .tp-pop   { animation: tpPop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
         @media (prefers-reduced-motion: reduce) {
-          .topicler-reveal,
-          .topicler-reveal-left,
-          .topicler-reveal-right,
-          .topicler-float,
-          .topicler-pulse {
+          .tp-in,
+          .tp-rv,
+          .tp-rv-l,
+          .tp-rv-r,
+          .tp-drift,
+          .tp-glow,
+          .tp-pop {
             animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
           }
         }
       `}</style>
@@ -358,9 +374,8 @@ export default function ContactPageSection() {
       ===================================================== */}
 
       <section className="relative overflow-hidden border-b border-[#FFE1D3] bg-[#FFF7F2]">
-
-        {/* Background grid */}
         <div
+          aria-hidden
           className="absolute inset-0 opacity-[0.28]"
           style={{
             backgroundImage:
@@ -369,199 +384,145 @@ export default function ContactPageSection() {
           }}
         />
 
-        {/* Soft orange glow */}
-        <div className="topicler-pulse pointer-events-none absolute -left-48 -top-48 h-[500px] w-[500px] rounded-full bg-[#FF5A14]/[0.055] blur-3xl" />
-
-        <div className="topicler-pulse pointer-events-none absolute -bottom-48 -right-40 h-[500px] w-[500px] rounded-full bg-[#FF5A14]/[0.045] blur-3xl" />
+        <div
+          aria-hidden
+          className="tp-glow pointer-events-none absolute -left-48 -top-48 h-[500px] w-[500px] rounded-full bg-[#FF5A14]/[0.08] blur-3xl"
+        />
 
         <div className="relative mx-auto max-w-[1440px] px-5 py-16 sm:py-20 lg:px-8 lg:py-24">
-
           <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
 
-            {/* =================================================
-                HERO TEXT
-            ================================================= */}
+            {/* ---------- Hero copy ---------- */}
+            <div className="max-w-2xl">
+              <div className="tp-in tp-in-1">
+                <SectionLabel title="Contact Topicler" />
+              </div>
 
-            <div className="topicler-reveal-left max-w-2xl">
-
-              <SectionLabel title="Contact Topicler" />
-
-              <h1 className="text-4xl font-bold leading-[1.04] tracking-[-0.045em] text-[#0B1220] sm:text-5xl lg:text-[62px]">
-
-                Have something
-                <br />
-
-                <span className="text-[#FF5A14]">
-                  to say?
-                </span>
-
+              <h1 className="tp-in tp-in-2 text-4xl font-bold leading-[1.04] tracking-[-0.045em] text-[#0B1220] sm:text-5xl lg:text-[62px]">
+                Write to a person, not a helpdesk.
               </h1>
 
-              <p className="mt-7 max-w-xl text-[16px] leading-8 text-slate-600 sm:text-[17px]">
-                Questions, suggestions, feedback, or just want
-                to say hello? Send us a message and let us know
-                what&apos;s on your mind.
+              <p className="tp-in tp-in-3 mt-7 max-w-xl text-[16px] leading-8 text-slate-600 sm:text-[17px]">
+                Topicler is a one-person project, so your message goes to the
+                same inbox as everything else and gets read by the person who
+                built the tools. Bugs, ideas, complaints — all welcome.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="tp-in tp-in-4 mt-8 flex flex-wrap gap-4">
+                <a
+                  href="#contact-form"
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(255,90,20,0.16)] transition-[background-color,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:bg-[#E94F0D] hover:shadow-[0_18px_40px_rgba(255,90,20,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2"
+                >
+                  Write a message
+                  <ArrowRight className="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1" />
+                </a>
 
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm">
-                  <Check className="h-3.5 w-3.5 text-[#FF5A14]" />
-                  Simple communication
-                </div>
-
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm">
-                  <Check className="h-3.5 w-3.5 text-[#FF5A14]" />
-                  Real feedback
-                </div>
-
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white/80 px-6 py-3.5 text-sm font-semibold text-[#0B1220] backdrop-blur-sm transition-[border-color,color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[#FF5A14] hover:text-[#C63D08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  Email instead
+                </a>
               </div>
-
             </div>
 
-            {/* =================================================
-                HERO VISUAL
-            ================================================= */}
-
-            <div className="topicler-reveal-right relative mx-auto w-full max-w-[720px]">
-
-              <div className="topicler-float pointer-events-none absolute -right-5 -top-5 h-24 w-24 rounded-full border border-[#FF5A14]/15" />
-
+            {/* ---------- Hero visual: what actually happens ---------- */}
+            <div className="tp-in tp-in-3 relative mx-auto w-full max-w-[720px]">
               <div className="relative rounded-[32px] border border-[#FFD9C8] bg-white p-7 shadow-[0_25px_70px_rgba(15,23,42,0.08)] sm:p-9">
-
-                {/* Header */}
                 <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+                  <h2 className="text-lg font-bold text-[#0B1220]">
+                    What happens after you send
+                  </h2>
 
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5A14]">
-                      Topicler
-                    </p>
-
-                    <h2 className="mt-1 text-lg font-bold text-[#0B1220]">
-                      Let&apos;s connect
-                    </h2>
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FFF1E9]">
+                    <MessageSquare className="h-5 w-5 text-[#C63D08]" />
                   </div>
-
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FFF1E9]">
-                    <MessageSquare className="h-5 w-5 text-[#FF5A14]" />
-                  </div>
-
                 </div>
 
-                {/* Message preview */}
-                <div className="mt-7 space-y-4">
-
-                  <div className="rounded-2xl bg-[#F8F9FB] p-4">
-
-                    <div className="h-2.5 w-20 rounded-full bg-slate-200" />
-
-                    <div className="mt-3 h-3 w-full rounded-full bg-slate-100" />
-
-                    <div className="mt-2 h-3 w-[78%] rounded-full bg-slate-100" />
-
-                  </div>
-
-                  <div className="rounded-2xl border border-[#FFDCCB] bg-[#FFF4EE] p-4">
-
-                    <div className="flex items-center gap-3">
-
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
-                        <Mail className="h-4 w-4 text-[#FF5A14]" />
-                      </div>
+                <ol className="mt-7 space-y-5">
+                  {nextSteps.map((step) => (
+                    <li key={step.number} className="flex gap-4">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0B1220] text-[11px] font-bold text-white">
+                        {step.number}
+                      </span>
 
                       <div>
-                        <p className="text-xs font-bold text-[#0B1220]">
-                          contact@topicler.com
+                        <p className="text-sm font-semibold text-[#0B1220]">
+                          {step.title}
                         </p>
-
-                        <p className="mt-0.5 text-[10px] text-slate-500">
-                          We&apos;re listening.
+                        <p className="mt-1 text-sm leading-6 text-slate-600">
+                          {step.text}
                         </p>
                       </div>
+                    </li>
+                  ))}
+                </ol>
 
-                    </div>
-
+                <div className="mt-7 flex items-center gap-3 rounded-2xl border border-[#FFDCCB] bg-[#FFF4EE] p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white">
+                    <Mail className="h-4 w-4 text-[#C63D08]" />
                   </div>
 
-                </div>
-
-                {/* Bottom */}
-                <div className="mt-7 flex items-center justify-between">
-
-                  <span className="text-xs text-slate-400">
-                    Usually replies within 24–48 hours
-                  </span>
-
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF5A14] text-white">
-                    <ArrowRight className="h-4 w-4" />
+                  <div className="min-w-0">
+                    <a
+                      href={`mailto:${CONTACT_EMAIL}`}
+                      className="block truncate text-sm font-semibold text-[#0B1220] underline-offset-2 transition-colors duration-300 hover:text-[#C63D08] hover:underline"
+                    >
+                      {CONTACT_EMAIL}
+                    </a>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      Or skip the form entirely
+                    </p>
                   </div>
-
                 </div>
-
               </div>
 
-              {/* Floating accent */}
-              <div className="topicler-float absolute -bottom-5 -left-5 rounded-2xl border border-[#FFD9C8] bg-white px-4 py-3 shadow-[0_15px_40px_rgba(15,23,42,0.10)]">
-
+              <div className="tp-drift absolute -bottom-5 -left-5 hidden rounded-2xl border border-[#FFD9C8] bg-white px-4 py-3 shadow-[0_15px_40px_rgba(15,23,42,0.10)] sm:block">
                 <div className="flex items-center gap-3">
-
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFF1E9]">
-                    <Sparkles className="h-4 w-4 text-[#FF5A14]" />
+                    <Clock3 className="h-4 w-4 text-[#C63D08]" />
                   </div>
 
                   <div>
                     <p className="text-xs font-bold text-[#0B1220]">
-                      Your voice matters.
+                      24–48 hours
                     </p>
-
-                    <p className="mt-0.5 text-[10px] text-slate-500">
-                      Help us improve Topicler
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                      Typical reply time
                     </p>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
         </div>
       </section>
 
       {/* =====================================================
-          CONTACT METHODS
+          CONTACT DETAILS
       ===================================================== */}
 
       <section className="py-20 md:py-24">
-
         <div className="mx-auto max-w-[1440px] px-5 lg:px-8">
-
-          <div className="topicler-reveal mb-12 max-w-2xl">
-
-            <SectionLabel title="Reach Out" />
+          <div className="tp-rv mb-12 max-w-2xl">
+            <SectionLabel title="Before you write" />
 
             <h2 className="text-3xl font-bold leading-tight tracking-[-0.035em] text-[#0B1220] sm:text-4xl">
-              Choose the easiest way to connect.
+              Three things worth knowing.
             </h2>
-
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
-
             {contactCards.map((item, index) => {
               const Icon = item.icon;
 
               return (
                 <div
                   key={item.title}
-                  className="topicler-reveal group rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-1.5 hover:border-[#FF5A14]/35 hover:shadow-[0_20px_50px_rgba(15,23,42,0.08)]"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                  }}
+                  className={`tp-rv tp-s${index + 1} group rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_10px_35px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#FF5A14]/25 hover:shadow-[0_16px_42px_rgba(15,23,42,0.065)]`}
                 >
-
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFF1E9] text-[#FF5A14] transition-transform duration-500 group-hover:scale-105">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFF1E9] text-[#C63D08] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]">
                     <Icon className="h-5 w-5" />
                   </div>
 
@@ -569,18 +530,16 @@ export default function ContactPageSection() {
                     {item.title}
                   </h3>
 
-                  <p className="mt-2 text-sm font-semibold text-[#FF5A14]">
+                  <p className="mt-2 break-words text-sm font-semibold text-[#C63D08]">
                     {item.value}
                   </p>
 
                   <p className="mt-3 text-sm leading-7 text-slate-600">
                     {item.text}
                   </p>
-
                 </div>
               );
             })}
-
           </div>
         </div>
       </section>
@@ -591,11 +550,10 @@ export default function ContactPageSection() {
 
       <section
         id="contact-form"
-        className="relative overflow-hidden bg-[#F8F4EE] py-20 md:py-28"
+        className="relative overflow-hidden border-t border-slate-100 bg-[#F8F4EE] py-20 md:py-28"
       >
-
-        {/* Grid */}
         <div
+          aria-hidden
           className="absolute inset-0 opacity-[0.25]"
           style={{
             backgroundImage:
@@ -604,247 +562,307 @@ export default function ContactPageSection() {
           }}
         />
 
-        <div className="topicler-pulse pointer-events-none absolute -right-40 top-10 h-80 w-80 rounded-full bg-[#FF5A14]/[0.06] blur-3xl" />
+        <div
+          aria-hidden
+          className="tp-glow pointer-events-none absolute -right-40 top-10 h-80 w-80 rounded-full bg-[#FF5A14]/[0.08] blur-3xl"
+        />
 
         <div className="relative mx-auto max-w-[1440px] px-5 lg:px-8">
-
           <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
 
-            {/* =================================================
-                FORM INTRO
-            ================================================= */}
-
-            <div className="topicler-reveal-left max-w-xl lg:sticky lg:top-28">
-
-              <SectionLabel title="Send a Message" />
+            {/* ---------- Intro ---------- */}
+            <div className="tp-rv-l max-w-xl lg:sticky lg:top-28">
+              <SectionLabel title="Send a message" />
 
               <h2 className="text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-[#0B1220] sm:text-4xl lg:text-5xl">
-                Tell us what&apos;s on your mind.
+                Tell me what is on your mind.
               </h2>
 
               <p className="mt-6 text-[16px] leading-8 text-slate-600">
-                We read every message. Whether it&apos;s feedback
-                about one of our tools, a suggestion for something
-                new, or simply a question, feel free to reach out.
+                No wrong reason to write. If something is broken a short
+                description of what you did beats a long apology for bothering
+                anyone.
               </p>
 
-              <div className="mt-8 space-y-3">
-
-                {[
-                  "Questions about Topicler",
-                  "Suggestions for new tools",
-                  "Feedback and improvements",
-                  "General messages",
-                ].map((item) => (
-                  <div
+              <ul className="mt-8 space-y-3">
+                {topics.map((item) => (
+                  <li
                     key={item}
                     className="flex items-center gap-3 text-sm text-slate-600"
                   >
-
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm">
-                      <Check className="h-3.5 w-3.5 text-[#FF5A14]" />
-                    </div>
-
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+                      <Check className="h-3.5 w-3.5 text-[#C63D08]" />
+                    </span>
                     {item}
-
-                  </div>
+                  </li>
                 ))}
+              </ul>
 
-              </div>
-
+              <p className="mt-8 text-sm leading-7 text-slate-600">
+                Looking for the tools instead?{" "}
+                <Link
+                  href="/tools/random-topic-generator/"
+                  className="font-medium text-[#C63D08] underline underline-offset-2 transition-colors duration-300 hover:text-[#0B1220]"
+                >
+                  Random Topic Generator
+                </Link>{" "}
+                or the{" "}
+                <Link
+                  href="/blogs/"
+                  className="font-medium text-[#C63D08] underline underline-offset-2 transition-colors duration-300 hover:text-[#0B1220]"
+                >
+                  blog
+                </Link>
+                .
+              </p>
             </div>
 
-            {/* =================================================
-                FORM
-            ================================================= */}
-
-            <div className="topicler-reveal-right">
-
+            {/* ---------- Form ---------- */}
+            <div className="tp-rv-r">
               <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_25px_70px_rgba(15,23,42,0.07)] sm:p-8 lg:p-10">
 
-                <form
-                  className="space-y-5"
-                  onSubmit={handleSubmit}
-                >
-
-                  {/* =================================================
-                      FIRST / LAST NAME
-                  ================================================= */}
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-
-                    <div>
-                      <label
-                        htmlFor="firstName"
-                        className="mb-2 block text-sm font-semibold text-[#0B1220]"
-                      >
-                        First Name
-                      </label>
-
-                      <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        placeholder="Your first name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        autoComplete="given-name"
-                        className="h-14 w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.08]"
-                      />
+                {isSuccess ? (
+                  /* ---------- Success panel ---------- */
+                  <div className="tp-pop py-10 text-center">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ECFDF3]">
+                      <CheckCircle2 className="h-7 w-7 text-[#0E9F6E]" />
                     </div>
 
-                    <div>
-                      <label
-                        htmlFor="lastName"
-                        className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                    <h3 className="mt-6 text-2xl font-bold tracking-[-0.02em] text-[#0B1220]">
+                      Message sent
+                    </h3>
+
+                    <p className="mx-auto mt-3 max-w-[44ch] text-[15px] leading-7 text-slate-600">
+                      It is in the inbox. You should get a reply within a day or
+                      two — check spam if nothing arrives by then.
+                    </p>
+
+                    <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={clearForm}
+                        className="inline-flex h-12 items-center justify-center rounded-full bg-[#FF5A14] px-7 text-sm font-semibold text-white transition-[background-color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:bg-[#E94F0D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2"
                       >
-                        Last Name
-                      </label>
+                        Send another message
+                      </button>
 
-                      <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        placeholder="Your last name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        autoComplete="family-name"
-                        className="h-14 w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.08]"
-                      />
+                      <Link
+                        href="/tools/random-topic-generator/"
+                        className="inline-flex h-12 items-center justify-center rounded-full border border-slate-300 px-7 text-sm font-semibold text-[#0B1220] transition-[border-color,color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[#FF5A14] hover:text-[#C63D08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2"
+                      >
+                        Back to the generator
+                      </Link>
                     </div>
-
                   </div>
+                ) : (
+                  /* ---------- Form ---------- */
+                  <form className="space-y-5" onSubmit={handleSubmit} noValidate={false}>
 
-                  {/* =================================================
-                      EMAIL / SUBJECT
-                  ================================================= */}
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="mb-2 block text-sm font-semibold text-[#0B1220]"
-                      >
-                        Email Address
-                      </label>
-
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        autoComplete="email"
-                        className="h-14 w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.08]"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="subject"
-                        className="mb-2 block text-sm font-semibold text-[#0B1220]"
-                      >
-                        Subject
-                      </label>
-
-                      <input
-                        id="subject"
-                        name="subject"
-                        type="text"
-                        placeholder="What is this about?"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                        className="h-14 w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 text-sm text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.08]"
-                      />
-                    </div>
-
-                  </div>
-
-                  {/* =================================================
-                      MESSAGE
-                  ================================================= */}
-
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                    {/* Honeypot — hidden from people, visible to bots */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
                     >
-                      Message
-                    </label>
+                      <label htmlFor="website">Leave this field empty</label>
+                      <input
+                        id="website"
+                        name="website"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                      />
+                    </div>
 
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={7}
-                      placeholder="Write your message here..."
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      className="w-full resize-none rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 py-4 text-sm leading-7 text-[#0B1220] outline-none transition-all duration-300 placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.08]"
-                    />
-                  </div>
+                    {/* Names */}
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label
+                          htmlFor="firstName"
+                          className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                        >
+                          First name
+                        </label>
 
-                  {/* =================================================
-                      BUTTONS
-                  ================================================= */}
+                        <input
+                          id="firstName"
+                          name="firstName"
+                          type="text"
+                          placeholder="Your first name"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          required
+                          autoComplete="given-name"
+                          disabled={isSending}
+                          className={inputClass}
+                        />
+                      </div>
 
-                  <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+                      <div>
+                        <label
+                          htmlFor="lastName"
+                          className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                        >
+                          Last name
+                        </label>
 
-                    <button
-                      type="submit"
-                      disabled={isSending}
-                      className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-7 text-sm font-semibold text-white shadow-[0_10px_25px_rgba(255,90,20,0.15)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#E94F0D] hover:shadow-[0_14px_30px_rgba(255,90,20,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {isSending ? (
-                        <>
-                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          Send Message
+                        <input
+                          id="lastName"
+                          name="lastName"
+                          type="text"
+                          placeholder="Your last name"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          required
+                          autoComplete="family-name"
+                          disabled={isSending}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
 
-                          <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                        </>
-                      )}
-                    </button>
+                    {/* Email / subject */}
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label
+                          htmlFor="email"
+                          className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                        >
+                          Email address
+                        </label>
 
-                    <button
-                      type="button"
-                      onClick={clearForm}
-                      disabled={isSending}
-                      className="inline-flex h-12 items-center justify-center rounded-full border border-slate-300 bg-white px-7 text-sm font-semibold text-[#0B1220] transition-all duration-300 hover:border-[#FF5A14] hover:text-[#FF5A14] disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      Clear Form
-                    </button>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          inputMode="email"
+                          placeholder="you@example.com"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          autoComplete="email"
+                          disabled={isSending}
+                          aria-describedby="email-help"
+                          className={inputClass}
+                        />
 
-                  </div>
+                        <p id="email-help" className="mt-2 text-xs text-slate-500">
+                          The reply goes here.
+                        </p>
+                      </div>
 
-                  <p className="pt-1 text-xs leading-5 text-slate-400">
-                    Your message will be sent securely to
-                    contact@topicler.com.
-                  </p>
+                      <div>
+                        <label
+                          htmlFor="subject"
+                          className="mb-2 block text-sm font-semibold text-[#0B1220]"
+                        >
+                          Subject
+                        </label>
 
-                </form>
+                        <input
+                          id="subject"
+                          name="subject"
+                          type="text"
+                          placeholder="What is this about?"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          required
+                          disabled={isSending}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
 
+                    {/* Message */}
+                    <div>
+                      <div className="mb-2 flex items-baseline justify-between gap-3">
+                        <label
+                          htmlFor="message"
+                          className="block text-sm font-semibold text-[#0B1220]"
+                        >
+                          Message
+                        </label>
+
+                        <span
+                          id="message-count"
+                          className={`text-xs tabular-nums transition-colors duration-300 ${
+                            formData.message.length > MESSAGE_LIMIT * 0.9
+                              ? "text-[#C63D08]"
+                              : "text-slate-400"
+                          }`}
+                        >
+                          {formData.message.length} / {MESSAGE_LIMIT}
+                        </span>
+                      </div>
+
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={7}
+                        maxLength={MESSAGE_LIMIT}
+                        placeholder="What happened, what you expected, or what you would like to see."
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
+                        disabled={isSending}
+                        aria-describedby="message-count"
+                        className="w-full rounded-2xl border border-slate-200 bg-[#FCFCFD] px-4 py-4 text-sm leading-7 text-[#0B1220] outline-none transition-[border-color,background-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] placeholder:text-slate-400 focus:border-[#FF5A14] focus:bg-white focus:ring-4 focus:ring-[#FF5A14]/[0.10]"
+                      />
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+                      <button
+                        type="submit"
+                        disabled={isSending}
+                        className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-7 text-sm font-semibold text-white shadow-[0_10px_25px_rgba(255,90,20,0.15)] transition-[background-color,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:bg-[#E94F0D] hover:shadow-[0_16px_34px_rgba(255,90,20,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                      >
+                        {isSending ? (
+                          <>
+                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            Sending
+                          </>
+                        ) : (
+                          <>
+                            Send message
+                            <Send className="h-4 w-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1" />
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={clearForm}
+                        disabled={isSending}
+                        className="inline-flex h-12 items-center justify-center rounded-full border border-slate-300 bg-white px-7 text-sm font-semibold text-[#0B1220] transition-[border-color,color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[#FF5A14] hover:text-[#C63D08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                      >
+                        Clear form
+                      </button>
+                    </div>
+
+                    {/*
+                      Screen readers get the status here. A toast alone is not
+                      reliably announced, and it disappears after a few seconds.
+                    */}
+                    <p aria-live="polite" className="sr-only">
+                      {isSending ? "Sending your message." : ""}
+                      {status === "error"
+                        ? "Your message did not send. Please try again."
+                        : ""}
+                    </p>
+
+                    <p className="pt-1 text-xs leading-5 text-slate-400">
+                      Your message goes to {CONTACT_EMAIL}. Nothing else is
+                      collected and nothing is shared.
+                    </p>
+                  </form>
+                )}
               </div>
-
             </div>
-
           </div>
         </div>
       </section>
-
-
-      {/* =====================================================
-          TOAST CONTAINER
-      ===================================================== */}
 
       <ToastContainer
         position="top-right"
@@ -857,7 +875,6 @@ export default function ContactPageSection() {
         theme="light"
         closeButton={false}
       />
-
     </main>
   );
 }

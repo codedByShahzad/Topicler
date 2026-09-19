@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/app/layout";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -13,77 +14,29 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topicler.com"),
-
-  title: "About Topicler | Idea & Content Discovery Tools",
+  title: { absolute: "About Topicler — Who Builds It and Why" },
 
   description:
-    "Learn about Topicler, a platform built to help you discover ideas, generate topics, and explore simple tools for content creation and research.",
+    "Topicler is an independent project building free AI topic generators. " +
+    "Meet the person behind it, see how the tools work and the standards " +
+    "behind our topics.",
 
-  keywords: [
-    "Topicler",
-    "about Topicler",
-    "Topicler tools",
-    "idea discovery tools",
-    "topic generator",
-    "random topic generator",
-    "topic ideas",
-    "content ideas",
-    "content creation tools",
-    "idea generator",
-  ],
-
-  authors: [
-    {
-      name: "Topicler",
-      url: "https://topicler.com",
-    },
-  ],
-
-  creator: "Topicler",
-  publisher: "Topicler",
-  category: "Tools",
-
-  alternates: {
-    canonical: "/about",
-  },
+  alternates: { canonical: "/about/" },
 
   openGraph: {
-    title: "About Topicler | Idea & Content Discovery Tools",
-    description:
-      "Learn about Topicler and discover simple tools designed to help you find ideas, generate topics, and explore new possibilities.",
-    url: "https://topicler.com/about",
-    siteName: "Topicler",
-    images: [
-      {
-        url: "https://topicler.com/images/ogImage.png",
-        width: 1200,
-        height: 630,
-        alt: "About Topicler",
-      },
-    ],
-    locale: "en_US",
     type: "website",
+    url: `${SITE_URL}/about/`,
+    title: "About Topicler — Who Builds It and Why",
+    description:
+      "An independent project building free AI topic generators. Who makes " +
+      "it, and how the tools work.",
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "About Topicler | Idea & Content Discovery Tools",
+    title: "About Topicler",
     description:
-      "Learn about Topicler and explore simple tools for discovering ideas and generating useful topics.",
-    images: ["https://topicler.com/images/ogImage.png"],
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
+      "An independent project building free AI topic generators. Who makes " +
+      "it, and how it works.",
   },
 };
 /* =========================================================
@@ -166,6 +119,39 @@ export default function AboutPage() {
       ===================================================== */}
 
       <style>{`
+
+        @keyframes topiclerHeroLeft {
+          from { opacity: 0; transform: translate3d(-34px, 18px, 0); }
+          to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+
+        @keyframes topiclerHeroRight {
+          from { opacity: 0; transform: translate3d(34px, 22px, 0) scale(0.97); }
+          to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        @keyframes topiclerHeroLabel {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topicler-hero-left {
+          opacity: 0;
+          animation: topiclerHeroLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+          will-change: transform, opacity;
+        }
+
+        .topicler-hero-right {
+          opacity: 0;
+          animation: topiclerHeroRight 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards;
+          will-change: transform, opacity;
+        }
+
+        .topicler-hero-label {
+          opacity: 0;
+          animation: topiclerHeroLabel 0.65s ease-out 0s forwards;
+        }
+
         @keyframes topiclerFloat {
           0%,
           100% {
@@ -300,6 +286,9 @@ export default function AboutPage() {
         }
 
         @media (prefers-reduced-motion: reduce) {
+          .topicler-hero-left,
+          .topicler-hero-right,
+          .topicler-hero-label,
           .topicler-float,
           .topicler-float-side,
           .topicler-pulse,
@@ -345,9 +334,11 @@ export default function AboutPage() {
                 HERO CONTENT
             ================================================= */}
 
-            <div className="topicler-reveal-left max-w-3xl">
+            <div className="topicler-hero-left max-w-3xl">
 
-              <SectionLabel>About Topicler</SectionLabel>
+              <div className="topicler-hero-label">
+                <SectionLabel>About Topicler</SectionLabel>
+              </div>
 
               <h1 className="text-4xl font-bold leading-[1.04] tracking-[-0.045em] text-[#0B1220] sm:text-5xl lg:text-[64px]">
 
@@ -391,7 +382,7 @@ export default function AboutPage() {
                 HERO VISUAL
             ================================================= */}
 
-            <div className="topicler-reveal-right relative mx-auto w-full max-w-[600px]">
+            <div className="topicler-hero-right relative mx-auto w-full max-w-[600px]">
 
               {/* Outer decorative ring */}
               <div className="topicler-float-side pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full border border-[#FF5A14]/15" />

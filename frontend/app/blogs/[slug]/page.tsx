@@ -9,9 +9,7 @@ import type { BlogBlock, BlogSection } from "../../../src/lib/blog";
 
 import TocClient from "./TocClient";
 
-export function generateStaticParams() {
-  return BLOGS.map((b) => ({ slug: b.slug }));
-}
+
 export const dynamicParams = false;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://topicler.com";
@@ -39,6 +37,11 @@ function absoluteUrl(path?: string | StaticImageData) {
   }`;
 }
 
+
+export async function generateStaticParams() {
+  return BLOGS.map((b) => ({ slug: b.slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -47,167 +50,54 @@ export async function generateMetadata({
   const { slug } = await params;
   const blog = getBlogBySlug(slug);
 
-  if (!blog) {
-    return {
-      metadataBase: new URL(SITE_URL),
+  // With dynamicParams = false this branch is unreachable in a production
+  // export. The page component calls notFound(), which is what actually
+  // produces the 404 — metadata is not the right tool for that job.
+  if (!blog) return {};
 
-      title: "Blog Not Found | Topicler",
+  // Defensive: strip a trailing "| Topicler" if an seoTitle was authored with
+  // it, otherwise the layout template would append a second one.
+  const rawTitle = (blog.seoTitle ?? blog.title)
+    .replace(/\s*\|\s*Topicler\s*$/i, "")
+    .trim();
 
-      description:
-        "The requested article could not be found on Topicler. Explore our resources for useful guides, insights, and ideas.",
+  const description = blog.seoDescription ?? blog.subtitle;
 
-      alternates: {
-        canonical: "/blog",
-      },
-
-      robots: {
-        index: false,
-        follow: false,
-      },
-
-      openGraph: {
-        title: "Blog Not Found | Topicler",
-
-        description:
-          "The requested article could not be found on Topicler. Explore our resources for useful guides, insights, and ideas.",
-
-        url: `${SITE_URL}/blog`,
-
-        siteName: "Topicler",
-
-        type: "website",
-
-        locale: "en_US",
-
-        images: [
-          {
-            url: `${SITE_URL}/images/ogImage.jpg`,
-            width: 1200,
-            height: 630,
-            alt: "Topicler Resources",
-          },
-        ],
-      },
-
-      twitter: {
-        card: "summary_large_image",
-
-        title: "Blog Not Found | Topicler",
-
-        description:
-          "Explore useful guides, insights, and ideas from Topicler.",
-
-        images: [`${SITE_URL}/images/ogImage.jpg`],
-      },
-    };
+  if (process.env.NODE_ENV !== "production" && !description) {
+    console.warn(`[seo] Blog "${blog.slug}" has no seoDescription or subtitle.`);
   }
 
-  const title = blog.seoTitle ?? `${blog.title} | Topicler`;
-
-  const description =
-    blog.seoDescription ??
-    blog.subtitle ??
-    `Read ${blog.title} on Topicler for useful insights, ideas, and information about ${blog.category}.`;
-
-  const canonicalPath =
-    blog.canonicalPath ?? `/blog/${blog.slug}`;
+  const canonicalPath = blog.canonicalPath ?? `/blog/${blog.slug}/`;
 
   const image = absoluteUrl(
-    blog.ogImage ??
-      blog.heroImage ??
-      "/images/ogImage.jpg"
+    blog.ogImage ?? blog.heroImage ?? "/images/ogImage.png"  // FIXED: was .jpg
   );
 
   const publishedTime =
-    blog.publishISO ??
-    toISODateSafe(blog.publishDate) ??
-    undefined;
+    blog.publishISO ?? toISODateSafe(blog.publishDate) ?? undefined;
+
 
   return {
-    metadataBase: new URL(SITE_URL),
-
-    title,
-
+    // Plain string — the layout template appends " | Topicler" exactly once.
+    title: rawTitle,
     description,
 
-    keywords: blog.keywords ?? [
-      "Topicler",
-      blog.title,
-      blog.category,
-      `${blog.category} guide`,
-      `${blog.category} insights`,
-      `${blog.category} ideas`,
-      "Topicler resources",
-      "helpful guides",
-      "useful articles",
-    ],
-
-    authors: [
-      {
-        name: "Topicler",
-        url: SITE_URL,
-      },
-    ],
-
-    creator: "Topicler",
-
-    publisher: "Topicler",
-
-    alternates: {
-      canonical: canonicalPath,
-    },
-
-    robots: {
-      index: true,
-      follow: true,
-
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-        "max-video-preview": -1,
-      },
-    },
-
-    category: blog.category,
+    alternates: { canonical: canonicalPath },
 
     openGraph: {
       type: "article",
-
-      siteName: "Topicler",
-
       url: `${SITE_URL}${canonicalPath}`,
-
-      title,
-
+      title: rawTitle,
       description,
-
-      locale: "en_US",
-
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-
+      images: [{ url: image, width: 1200, height: 630, alt: rawTitle }],
       publishedTime,
-
       section: blog.category,
-
-      tags: blog.keywords,
+      authors: [`${SITE_URL}/about/`],
     },
 
     twitter: {
-      card: "summary_large_image",
-
-      title,
-
+      title: rawTitle,
       description,
-
       images: [image],
     },
   };

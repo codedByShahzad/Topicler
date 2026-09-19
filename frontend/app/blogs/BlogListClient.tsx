@@ -1,78 +1,300 @@
 "use client";
 
-import React, { useMemo } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { ArrowRight, Search, Sparkles } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Search, X } from "lucide-react";
+
 import { BLOGS } from "../../src/lib/blog";
 import BlogCard from "@/src/components/BlogCard";
 
-function GridBackground() {
+type Blog = (typeof BLOGS)[number];
+
+const ALL_CATEGORIES = "All";
+
+/* ==========================================================================
+   Reveal — scroll / mount entrance
+
+   Inline styles only, so there is no CSS file to import. Animates opacity and
+   transform exclusively, which keeps it on the compositor and never triggers
+   layout. IntersectionObserver fires once then disconnects.
+   Respects prefers-reduced-motion.
+   ========================================================================== */
+
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+  immediate = false,
+}: {
+  children: ReactNode;
+  /** Stagger in ms. Keep under ~240 so a row never feels slow. */
+  delay?: number;
+  className?: string;
+  /** Reveal right after mount instead of waiting for scroll. */
+  immediate?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduced) {
+      setShown(true);
+      return;
+    }
+
+    if (immediate) {
+      const t = setTimeout(() => setShown(true), 30);
+      return () => clearTimeout(t);
+    }
+
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, [immediate]);
+
   return (
-    <div className="absolute inset-0 -z-10 overflow-hidden">
-      {/* Subtle grid */}
-      <div
-        className="absolute inset-0 opacity-[0.16]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(11,18,32,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(11,18,32,0.05) 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
-        }}
-      />
-
-      {/* Soft orange glow */}
-      <div className="absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-[#FF5A14]/[0.055] blur-3xl" />
-
-      <div className="absolute -right-40 top-20 h-[380px] w-[380px] rounded-full bg-[#FF5A14]/[0.045] blur-3xl" />
-
-      {/* White fade */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white" />
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: shown ? 1 : 0,
+        transform: shown ? "none" : "translateY(14px)",
+        transition: `opacity 480ms cubic-bezier(.22,.61,.36,1) ${delay}ms, transform 480ms cubic-bezier(.22,.61,.36,1) ${delay}ms`,
+      }}
+    >
+      {children}
     </div>
   );
 }
 
-export default function BlogListClient() {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search")?.trim() || "";
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
 
-  const filteredBlogs = useMemo(() => {
-    if (!searchQuery) return BLOGS;
+function formatReadingTime(value?: string | number) {
+  if (value === undefined || value === null || value === "") return null;
+  return typeof value === "number" ? `${value} min read` : value;
+}
 
-    const normalizedQuery = searchQuery.toLowerCase();
+/* ==========================================================================
+   Featured lead article
 
-    return BLOGS.filter((blog) => {
-      const title = blog.title?.toLowerCase() || "";
-      const subtitle = blog.subtitle?.toLowerCase() || "";
-      const category = blog.category?.toLowerCase() || "";
+   The one place this page raises its voice. Everything below it stays quiet.
+   Uses BLOGS[0], so it is fully dynamic and hides itself while filtering.
+   ========================================================================== */
 
-      return (
-        title.includes(normalizedQuery) ||
-        subtitle.includes(normalizedQuery) ||
-        category.includes(normalizedQuery)
-      );
-    });
-  }, [searchQuery]);
+function FeaturedArticle({ blog }: { blog: Blog }) {
+  const reading = formatReadingTime(blog.readingTime);
 
   return (
-    <div className="relative min-h-[92vh] overflow-hidden bg-white">
-      <GridBackground />
+    <article className="group">
+      <h1 className="text-2xl font-bold tracking-[-0.02em] text-[#0B1220] mb-2 lg:mb-6">Latest Article</h1>
+      <Link
+        href={`/blogs/${blog.slug}`}
+        className="grid overflow-hidden rounded-3xl border border-[#E8EBF0] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#FFD5C2] hover:shadow-[0_28px_70px_-40px_rgba(11,18,32,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 lg:grid-cols-[1.15fr_1fr]"
+      >
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#FFF4EE] lg:aspect-auto lg:min-h-[420px]">
+          {blog.heroImage ? (
+            <Image
+              src={blog.heroImage}
+              alt=""
+              fill
+              sizes="(max-width: 1023px) 100vw, 55vw"
+              priority
+              className="object-cover transition-transform duration-[700ms] ease-out group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div aria-hidden className="absolute inset-0 bg-[#FFF4EE]" />
+          )}
+        </div>
 
+        <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <span className="rounded-full bg-[#FFF4EE] px-3 py-1 font-semibold text-[#C63D08]">
+              Latest
+            </span>
+            {blog.category && (
+              <span className="text-slate-500">{blog.category}</span>
+            )}
+          </div>
+
+          <h3 className="mt-5 text-[28px] font-bold leading-[1.15] tracking-[-0.03em] text-[#0B1220] transition-colors duration-200 group-hover:text-[#C63D08] sm:text-4xl lg:text-[42px]">
+            {blog.title}
+          </h3>
+
+          {blog.subtitle && (
+            <p className="mt-4 max-w-[60ch] text-base leading-8 text-slate-600 sm:text-[17px]">
+              {blog.subtitle}
+            </p>
+          )}
+
+          <div className="mt-7 flex items-center gap-3 text-sm text-slate-500">
+            {blog.publishDate && <span>{blog.publishDate}</span>}
+            {blog.publishDate && reading && (
+              <span aria-hidden className="h-3 w-px bg-slate-200" />
+            )}
+            {reading && <span>{reading}</span>}
+          </div>
+
+          <span className="mt-7 inline-flex w-fit items-center rounded-full bg-[#0B1220] px-5 py-3 text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-[#FF5A14]">
+            Read this article
+          </span>
+        </div>
+      </Link>
+    </article>
+  );
+}
+
+/* ==========================================================================
+   Empty state
+   ========================================================================== */
+
+function EmptyState({
+  query,
+  onReset,
+}: {
+  query: string;
+  onReset: () => void;
+}) {
+  return (
+    <div className="rounded-3xl border border-[#E8EBF0] bg-[#FFF4EE] px-6 py-20 text-center">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-[#FFD5C2] bg-white">
+        <Search aria-hidden className="h-5 w-5 text-[#C63D08]" />
+      </div>
+
+      <h2 className="mt-6 text-2xl font-bold tracking-[-0.02em] text-[#0B1220]">
+        No articles match that
+      </h2>
+
+      <p className="mx-auto mt-3 max-w-[48ch] text-[15px] leading-7 text-slate-600">
+        {query
+          ? `Nothing found for “${query}”. Try a broader word, or clear the filters to see everything.`
+          : "Nothing in this category yet. Clear the filters to see every article."}
+      </p>
+
+      <button
+        type="button"
+        onClick={onReset}
+        className="mt-7 inline-flex items-center rounded-full bg-[#FF5A14] px-6 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#e94f0d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2"
+      >
+        Show all articles
+      </button>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   Blog listing
+   ========================================================================== */
+
+export default function BlogListClient() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const urlQuery = searchParams.get("search")?.trim() || "";
+
+  // The URL stays the source of truth, so existing links such as
+  // /blogs/?search=seo keep working exactly as before. The input mirrors it
+  // and writes back on a debounce.
+  const [query, setQuery] = useState(urlQuery);
+  const [category, setCategory] = useState<string>(ALL_CATEGORIES);
+  const firstRun = useRef(true);
+
+  useEffect(() => {
+    setQuery(urlQuery);
+  }, [urlQuery]);
+
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+
+    const t = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (query.trim()) params.set("search", query.trim());
+      else params.delete("search");
+
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, 300);
+
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  const categories = useMemo(() => {
+    const found = new Set<string>();
+    for (const blog of BLOGS) if (blog.category) found.add(blog.category);
+    return [ALL_CATEGORIES, ...Array.from(found).sort((a, b) => a.localeCompare(b))];
+  }, []);
+
+  const filteredBlogs = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    return BLOGS.filter((blog) => {
+      if (category !== ALL_CATEGORIES && blog.category !== category) {
+        return false;
+      }
+      if (!q) return true;
+
+      const title = blog.title?.toLowerCase() || "";
+      const subtitle = blog.subtitle?.toLowerCase() || "";
+      const blogCategory = blog.category?.toLowerCase() || "";
+
+      return (
+        title.includes(q) || subtitle.includes(q) || blogCategory.includes(q)
+      );
+    });
+  }, [query, category]);
+
+  const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
+  const [lead, ...rest] = filteredBlogs;
+  const gridItems = isFiltering ? filteredBlogs : rest;
+
+  const resetFilters = () => {
+    setQuery("");
+    setCategory(ALL_CATEGORIES);
+  };
+
+  return (
+    <div className="min-h-[92vh] bg-white">
       {/* =========================================================
-          HERO / RESOURCE HEADER
+          MASTHEAD
+          Rendered without entrance animation on purpose: the H1 is the
+          most important element on the page and should never depend on
+          JavaScript to become visible.
       ========================================================= */}
-      <section className="relative  overflow-hidden border-y border-[#FFE0D0] bg-[#FFF4EE] ">
-        {/* Decorative orange glow */}
-        <div className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-[#FF5A14]/10 blur-3xl" />
-
-        <div className="pointer-events-none absolute -bottom-40 -right-40 h-[420px] w-[420px] rounded-full bg-[#FF5A14]/[0.07] blur-3xl" />
-
-        {/* Decorative circles */}
-        <div className="pointer-events-none absolute right-[8%] top-10 hidden h-24 w-24 rounded-full border border-[#FF5A14]/10 lg:block" />
-
-        <div className="pointer-events-none absolute bottom-8 left-[7%] hidden h-14 w-14 rounded-full border border-[#FF5A14]/10 lg:block" />
-
-        {/* Hero Content */}
+      <header className="border-b border-[#E8EBF0] bg-[#FFF4EE]">
+                {/* Hero Content */}
         <div className="relative mx-auto max-w-360 px-5 py-6 text-center sm:py-20 lg:px-8 lg:py-14">
           {/* Eyebrow */}
           <div className="flex justify-center">
@@ -84,9 +306,6 @@ export default function BlogListClient() {
                 height={18}
               />
 
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF5A14] sm:text-[11px]">
-                {searchQuery ? "Search Results" : "Topicler Resources"}
-              </span>
             </div>
           </div>
 
@@ -104,133 +323,98 @@ export default function BlogListClient() {
             get more from Topicler&apos;s tools.
           </p>
         </div>
-      </section>
+
+      </header>
 
       {/* =========================================================
-          MAIN CONTENT
+          CATEGORY FILTERS
+          Built from the real category values in BLOGS — nothing is
+          hardcoded, so new categories appear on their own.
       ========================================================= */}
-      <div className="mx-auto max-w-360 px-5 py-10 lg:px-8 lg:py-12">
-
-        {/* RESULTS HEADER */}
-        <section className="mb-8 flex flex-col gap-5 border-b border-slate-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              {searchQuery
-                ? "Matching resources"
-                : "Explore the collection"}
-            </p>
-
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#0B1220] md:text-3xl">
-              {searchQuery
-                ? "Relevant resources"
-                : "Latest resources"}
-            </h2>
-          </div>
-
-          {/* Result count */}
-          <div className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 shadow-sm">
-            <span className="font-semibold text-[#0B1220]">
-              {filteredBlogs.length}
-            </span>
-
-            <span className="ml-1">
-              {filteredBlogs.length === 1
-                ? "result"
-                : "results"}
-            </span>
-
-            {searchQuery && (
-              <>
-                <span className="mx-2 text-slate-300">•</span>
-
-                <span className="max-w-[180px] truncate font-medium text-[#FF5A14]">
-                  {searchQuery}
-                </span>
-              </>
-            )}
-
-            {!searchQuery && (
-              <>
-                <span className="mx-2 text-slate-300">from</span>
-
-                <span className="font-semibold text-[#0B1220]">
-                  {BLOGS.length}
-                </span>
-
-                <span className="ml-1">
-                  resources
-                </span>
-              </>
-            )}
-          </div>
-        </section>
-
-        {/* =========================================================
-            RESOURCE GRID / EMPTY STATE
-        ========================================================= */}
-        {filteredBlogs.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {filteredBlogs.map((blog, index) => (
-              <BlogCard
-                key={blog.slug}
-                slug={blog.slug}
-                title={blog.title}
-                subtitle={blog.subtitle}
-                heroImage={blog.heroImage}
-                category={blog.category}
-                publishDate={blog.publishDate}
-                readingTime={blog.readingTime}
-                priority={index < 3}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white px-6 py-20 text-center shadow-[0_15px_50px_rgba(15,23,42,0.05)]">
-
-            {/* Empty state glow */}
-            <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-40 -translate-x-1/2 rounded-full bg-[#FF5A14]/10 blur-3xl" />
-
-            <div className="relative">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#FFDCCC] bg-[#FFF4EE]">
-                <Search className="h-6 w-6 text-[#FF5A14]" />
-              </div>
-
-              <h2 className="mt-6 text-2xl font-bold tracking-tight text-[#0B1220]">
-                No resources found
-              </h2>
-
-              <p className="mx-auto mt-3 max-w-md text-[15px] leading-7 text-slate-600">
-                No resources matched{" "}
-                <span className="font-semibold text-[#FF5A14]">
-                  “{searchQuery}”
-                </span>
-                . Try searching for another topic or keyword.
-              </p>
-
-              <div className="mt-7">
-                <Link
-                  href="/blog"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A14] px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#e94f0d] hover:shadow-lg"
+      <div className="sticky top-0 z-20 border-b border-[#E8EBF0] bg-white/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-360 items-center gap-4 px-5 py-3.5 lg:px-8">
+          <div
+            role="group"
+            aria-label="Filter by category"
+            className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {categories.map((name) => {
+              const active = category === name;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setCategory(name)}
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 ${
+                    active
+                      ? "border-[#0B1220] bg-[#0B1220] text-white"
+                      : "border-[#E8EBF0] bg-white text-slate-600 hover:border-[#FFD5C2] hover:text-[#0B1220]"
+                  }`}
                 >
-                  Explore All Resources
-
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
+                  {name}
+                </button>
+              );
+            })}
           </div>
-        )}
 
-        {/* Bottom message */}
-        <div className="mt-14 flex items-center justify-center gap-2 text-center">
-          <Sparkles className="h-4 w-4 shrink-0 text-[#FF5A14]" />
-
-          <p className="text-sm text-slate-500">
-            Practical resources to help you discover ideas and get more from
-            Topicler.
+          <p
+            aria-live="polite"
+            className="hidden shrink-0 text-sm text-slate-500 sm:block"
+          >
+            {filteredBlogs.length} of {BLOGS.length}
           </p>
         </div>
       </div>
+
+      {/* =========================================================
+          ARTICLES
+      ========================================================= */}
+      <main className="mx-auto max-w-360 px-5 py-12 lg:px-8 lg:py-16">
+        {filteredBlogs.length === 0 ? (
+          <EmptyState query={query} onReset={resetFilters} />
+        ) : (
+          <>
+            {!isFiltering && lead && (
+              <section className="mb-14 lg:mb-20">
+                <h2 className="sr-only">Featured article</h2>
+                <Reveal immediate>
+                  <FeaturedArticle blog={lead} />
+                </Reveal>
+              </section>
+            )}
+
+            <section>
+              <h2 className="text-2xl font-bold tracking-[-0.02em] text-[#0B1220]">
+                {isFiltering ? "Matching articles" : "More articles"}
+              </h2>
+
+              <div className="mt-8 grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-3">
+                {gridItems.map((blog, index) => (
+                  <Reveal
+                    key={blog.slug}
+                    delay={Math.min(index, 2) * 70}
+                    className="h-full"
+                  >
+                    <BlogCard
+                      slug={blog.slug}
+                      title={blog.title}
+                      subtitle={blog.subtitle}
+                      heroImage={blog.heroImage}
+                      category={blog.category}
+                      publishDate={blog.publishDate}
+                      readingTime={blog.readingTime}
+                      priority={index < 3}
+                    />
+                  </Reveal>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+
+
+      </main>
     </div>
   );
 }

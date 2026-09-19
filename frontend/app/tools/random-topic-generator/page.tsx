@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/app/layout";
 import {
   CalendarRange,
   Compass,
@@ -17,87 +18,29 @@ import TopicGenerator from "@/src/components/topic-generator/TopicGenerator";
 import FAQ, { type FaqItem } from "@/src/components/topic-generator/FAQ";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topicler.com"),
-
-  title: "Random Topic Generator | Generate Topic Ideas | Topicler",
+  title: "Random Topic Generator — Free AI Topic Ideas",
 
   description:
-    "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more. Find fresh content ideas and plan your next piece with Topicler.",
+    "Generate ten fresh random topics instantly with our free AI-powered " +
+    "generator. Ideal for essays, blog posts, speeches, debates and " +
+    "conversation starters.",
 
-  keywords: [
-    "random topic generator",
-    "topic generator",
-    "random topic ideas",
-    "topic ideas generator",
-    "content topic generator",
-    "blog topic generator",
-    "SEO topic generator",
-    "content ideas",
-    "blog ideas",
-    "YouTube topic ideas",
-  ],
-
-  authors: [
-    {
-      name: "Topicler",
-      url: "https://topicler.com",
-    },
-  ],
-
-  creator: "Topicler",
-  publisher: "Topicler",
-
-  category: "Content Tools",
-
-  alternates: {
-    canonical: "/tools/random-topic-generator",
-  },
+  alternates: { canonical: "/tools/random-topic-generator/" },
 
   openGraph: {
-    title: "Random Topic Generator | Generate Topic Ideas | Topicler",
-
-    description:
-      "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more with Topicler.",
-
-    url: "https://topicler.com/tools/random-topic-generator",
-
-    siteName: "Topicler",
-
-    images: [
-      {
-        url: "https://topicler.com/images/ogImage.png",
-        width: 1200,
-        height: 630,
-        alt: "Topicler Random Topic Generator",
-      },
-    ],
-
-    locale: "en_US",
     type: "website",
+    url: `${SITE_URL}/tools/random-topic-generator/`,
+    title: "Random Topic Generator — Free AI Topic Ideas",
+    description: "Ten fresh AI-generated topics in one click. Free, no sign-up.",
+    // TODO: swap to a dedicated OG image once created, e.g.
+    // images: [{ url: "/images/og-random-topic-generator.png",
+    //            width: 1200, height: 630,
+    //            alt: "Topicler Random Topic Generator" }],
   },
 
   twitter: {
-    card: "summary_large_image",
-
-    title: "Random Topic Generator | Topicler",
-
-    description:
-      "Generate random topic ideas for blogs, SEO content, YouTube videos, social media, and more with Topicler.",
-
-    images: ["https://topicler.com/images/ogImage.png"],
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
+    title: "Random Topic Generator — Free AI Topic Ideas",
+    description: "Ten fresh AI-generated topics in one click. Free, no sign-up.",
   },
 };
 

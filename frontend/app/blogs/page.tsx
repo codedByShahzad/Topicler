@@ -1,90 +1,35 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/app/layout";
 import { Suspense } from "react";
 import BlogListClient from "./BlogListClient";
 
+// `absolute` bypasses the "%s | Topicler" template because this title already
+// contains the brand. Without it you would get "... Blog | Topicler".
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topicler.com"),
-
-  title: "Topicler Resources | Guides, Insights & Ideas",
+  title: { absolute: "Topic Ideas & Writing Prompts — The Topicler Blog" },
 
   description:
-    "Explore Topicler Resources for practical guides, insights, and helpful articles on content creation, SEO, technology, business, and more.",
+    "Curated topic lists, writing prompts and idea guides for students, " +
+    "speakers, writers and content creators — plus how to use topic " +
+    "generators well.",
 
-  keywords: [
-    "Topicler resources",
-    "Topicler blog",
-    "Topicler articles",
-    "content creation guides",
-    "SEO guides",
-    "content ideas",
-    "content strategy",
-    "blogging tips",
-    "technology guides",
-    "business insights",
-  ],
-
-  authors: [
-    {
-      name: "Topicler",
-      url: "https://topicler.com",
-    },
-  ],
-
-  creator: "Topicler",
-  publisher: "Topicler",
-
-  category: "Resources",
-
-  alternates: {
-    canonical: "/blog",
-  },
+  // FIXED: was "/blog", which is not the listing route.
+  alternates: { canonical: "/blogs/" },
 
   openGraph: {
-    title: "Topicler Resources | Guides, Insights & Ideas",
-
-    description:
-      "Explore Topicler Resources for practical guides, insights, and helpful articles on content creation, SEO, technology, business, and more.",
-
-    url: "https://topicler.com/blog",
-
-    siteName: "Topicler",
-
     type: "website",
-
-    locale: "en_US",
-
-    images: [
-      {
-        url: "https://topicler.com/images/ogImage.png",
-        width: 1200,
-        height: 630,
-        alt: "Topicler Resources",
-      },
-    ],
+    url: `${SITE_URL}/blogs/`,   // FIXED: was https://topicler.com/blog
+    title: "Topic Ideas & Writing Prompts — The Topicler Blog",
+    description:
+      "Curated topic lists, writing prompts and idea guides for students, " +
+      "speakers, writers and content creators.",
   },
 
   twitter: {
-    card: "summary_large_image",
-
-    title: "Topicler Resources | Guides, Insights & Ideas",
-
+    title: "Topic Ideas & Writing Prompts — The Topicler Blog",
     description:
-      "Explore practical guides, insights, and helpful articles from Topicler on content creation, SEO, technology, business, and more.",
-
-    images: ["https://topicler.com/images/ogImage.png"],
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
+      "Curated topic lists, writing prompts and idea guides for writers, " +
+      "students and creators.",
   },
 };
 

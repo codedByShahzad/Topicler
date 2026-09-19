@@ -4,23 +4,27 @@ import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   metadataBase: new URL("https://topicler.com"),
 
-  title:
-    "Topicler | Blogs on Politics, Finance, Real Estate, Technology & More",
+  title: "Random Topic Generator | Generate Topics Instantly",
 
   description:
-    "Topicler is your go-to platform for expert blogs on Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, and Home Improvement. Stay updated with trending insights.",
+    "Generate random topics instantly with Topicler. Get creative topic ideas, writing prompts, discussion topics, and content ideas for free.",
 
   keywords: [
     "Topicler",
-    "politics blogs",
-    "finance articles",
-    "real estate insights",
-    "technology blogs",
-    "plumbing tips",
-    "digital marketing strategies",
-    "home improvement ideas",
-    "latest blog website",
-    "trending articles",
+    "random topic generator",
+    "random topic generator online",
+    "random topics",
+    "topic generator",
+    "topic ideas",
+    "random topic ideas",
+    "content ideas",
+    "writing prompts",
+    "creative writing topics",
+    "discussion topics",
+    "interesting topics",
+    "blog topic ideas",
+    "free topic generator",
+    "generate random topics",
   ],
 
   alternates: {
@@ -28,35 +32,44 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title:
-      "Topicler | Blogs on Politics, Finance, Real Estate, Technology & More",
+    title: "Random Topic Generator | Generate Topics Instantly",
+
     description:
-      "Explore expert blogs on Politics, Finance, Real Estate, Technology, Plumbing, Digital Marketing, and Home Improvement.",
+      "Generate random topics instantly with Topicler. Discover creative ideas, writing prompts, discussion topics, and content ideas for free.",
+
     url: "https://topicler.com",
+
     siteName: "Topicler",
+
     images: [
       {
         url: "https://topicler.com/images/ogImage.png",
         width: 1200,
         height: 630,
-        alt: "Topicler Blog Platform",
+        alt: "Topicler Random Topic Generator",
       },
     ],
+
     locale: "en_US",
+
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Topicler | Multi-Niche Blog Platform",
+
+    title: "Random Topic Generator | Topicler",
+
     description:
-      "Stay updated with blogs on Finance, Tech, Marketing, Plumbing & more.",
-    images: ["https://topicler.com/images/ogImage.png"], // ✅ fixed
+      "Generate random topics, writing prompts, creative ideas, and content topics instantly with Topicler.",
+
+    images: ["https://topicler.com/images/ogImage.png"],
   },
 
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
@@ -71,7 +84,6 @@ export const metadata: Metadata = {
 
   category: "technology",
 };
-
 
 export default function HomePage() {
   redirect("/tools/random-topic-generator");

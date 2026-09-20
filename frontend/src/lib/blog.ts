@@ -60,7 +60,7 @@ export const BLOGS: BlogPost[] = [
   readingTime: "8 min",
   guideLabel: "This guide",
   guideValue: "Practical strategies + real examples",
-  canonicalPath: "/blog/how-to-come-up-with-blog-topics",
+  canonicalPath: "/blogs/how-to-come-up-with-blog-topics",
   seoTitle: "How to Come Up With Blog Topics When You Have No Ideas",
   seoDescription:
     "Stuck for blog post ideas? Here are eight practical ways to come up with blog topics, a five-question test for picking one, and a fast outline process.",
@@ -376,7 +376,7 @@ export const BLOGS: BlogPost[] = [
   readingTime: "8 min",
   guideLabel: "This guide",
   guideValue: "Random prompts + practical exercises",
-  canonicalPath: "/blog/what-should-you-talk-about-write-or-draw",
+  canonicalPath: "/blogs/what-should-you-talk-about-write-or-draw",
   seoTitle: "What Should You Talk About, Write, or Draw? Let a Random Topic Generator Decide",
   seoDescription:
     "Explore how random topic generators can help with speaking, conversation, writing, English practice, drawing, brainstorming, and group activities.",
@@ -661,7 +661,7 @@ export const BLOGS: BlogPost[] = [
   readingTime: "9 min",
   guideLabel: "This guide",
   guideValue: "Practical strategies + real examples",
-  canonicalPath: "/blog/how-to-come-up-with-blog-ideas-when-you-have-no-inspiration",
+  canonicalPath: "/blogs/how-to-come-up-with-blog-ideas-when-you-have-no-inspiration",
   seoTitle: "How to Come Up With Blog Ideas When You Have No Inspiration",
   seoDescription:
     "Learn how to come up with blog ideas using reader questions, customer complaints, social media, Google Trends, competitor research, AI, and random topic generators.",
@@ -985,7 +985,7 @@ export const BLOGS: BlogPost[] = [
   readingTime: "8 min",
   guideLabel: "This guide",
   guideValue: "Research + practical conversation examples",
-  canonicalPath: "/blog/why-do-random-questions-lead-to-better-conversations",
+  canonicalPath: "/blogs/why-do-random-questions-lead-to-better-conversations",
   seoTitle: "Why Do Random Questions Lead to Better Conversations?",
   seoDescription:
     "Learn why random questions can make conversations more engaging, reduce awkwardness, encourage stories, and help people connect.",
@@ -1209,7 +1209,7 @@ export const BLOGS: BlogPost[] = [
   readingTime: "9 min",
   guideLabel: "This guide",
   guideValue: "Practical conversation strategies + real examples",
-  canonicalPath: "/blog/how-to-never-run-out-of-things-to-talk-about",
+  canonicalPath: "/blogs/how-to-never-run-out-of-things-to-talk-about",
   seoTitle: "How to Never Run Out of Things to Talk About",
   seoDescription:
     "Learn how to keep conversations going, find things to talk about, handle silence, and build better conversation skills with simple techniques.",
@@ -1331,7 +1331,7 @@ export const BLOGS: BlogPost[] = [
             {
               type: "link",
               text: "random topic generator",
-              href: "https://topicler.com/tools/random-topic-generator/",
+              href: "https://topicler.com/",
             },
             {
               type: "text",
@@ -1424,7 +1424,7 @@ export const BLOGS: BlogPost[] = [
             {
               type: "link",
               text: "get a random topic",
-              href: "https://topicler.com/tools/random-topic-generator/",
+              href: "https://topicler.com/",
             },
             {
               type: "text",

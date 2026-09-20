@@ -118,7 +118,7 @@ function FeaturedArticle({ blog }: { blog: Blog }) {
       <h1 className="text-2xl font-bold tracking-[-0.02em] text-[#0B1220] mb-2 lg:mb-6">Latest Article</h1>
       <Link
         href={`/blogs/${blog.slug}`}
-        className="grid overflow-hidden rounded-3xl border border-[#E8EBF0] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#FFD5C2] hover:shadow-[0_28px_70px_-40px_rgba(11,18,32,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 lg:grid-cols-[1.15fr_1fr]"
+        className="grid overflow-hidden rounded-xl border border-[#E8EBF0] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#FFD5C2] hover:shadow-[0_28px_70px_-40px_rgba(11,18,32,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 lg:grid-cols-[1.15fr_1fr]"
       >
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#FFF4EE] lg:aspect-auto lg:min-h-[420px]">
           {blog.heroImage ? (
@@ -276,9 +276,13 @@ export default function BlogListClient() {
     });
   }, [query, category]);
 
-  const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
-  const [lead, ...rest] = filteredBlogs;
-  const gridItems = isFiltering ? filteredBlogs : rest;
+const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
+
+const orderedBlogs = [...filteredBlogs].reverse();
+
+const [lead, ...rest] = orderedBlogs;
+
+const gridItems = isFiltering ? orderedBlogs : rest;
 
   const resetFilters = () => {
     setQuery("");

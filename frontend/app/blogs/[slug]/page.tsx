@@ -129,13 +129,34 @@ function SectionRenderer({ section }: { section: BlogSection }) {
 
       <div className="mt-4 space-y-4">
         {section.content.map((block: BlogBlock, idx: number) => {
-          if (block.type === "p") {
-            return (
-              <p key={idx} className="leading-relaxed text-slate-600">
-                {block.text}
-              </p>
-            );
-          }
+if (block.type === "p") {
+  if ("content" in block) {
+    return (
+      <p key={idx} className="leading-relaxed text-slate-600">
+        {block.content.map((part, partIndex) =>
+          part.type === "link" ? (
+            <Link
+              key={partIndex}
+              href={part.href}
+              target="_blank"
+              className="text-[#FF5A14] underline underline-offset-2 hover:text-[#C63D08]"
+            >
+              {part.text}
+            </Link>
+          ) : (
+            <span key={partIndex}>{part.text}</span>
+          )
+        )}
+      </p>
+    );
+  }
+
+  return (
+    <p key={idx} className="leading-relaxed text-slate-600">
+      {block.text}
+    </p>
+  );
+}
 
           if (block.type === "h3") {
             return (
@@ -270,7 +291,7 @@ export default async function BlogDetailPage({
       <div className="mx-auto max-w-360 px-3 py-4 sm:px-4 md:px-6 md:py-10">
         {/* HERO */}
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white/70 shadow-sm">
-          <div className="relative h-[550px] md:h-[480px]">
+          <div className="relative h-[550px] md:h-[580px]">
             <Image
               src={blog.heroImage}
               alt={blog.title}
@@ -347,7 +368,7 @@ export default async function BlogDetailPage({
               </h3>
 
               <Link
-                href="/blog"
+                href="/blogs"
                 className="group inline-flex items-center gap-2 rounded-full bg-[#FF5A14] px-4 py-2 text-sm font-medium text-white hover:bg-[#e14e12] hover:shadow-md"
               >
                 <span>View all</span>
@@ -359,10 +380,10 @@ export default async function BlogDetailPage({
               {related.map((p) => (
                 <Link
                   key={p.slug}
-                  href={`/blog/${p.slug}`}
-                  className="group overflow-hidden rounded-3xl border border-slate-200 bg-white/80 shadow-sm transition hover:border-[#FF5A14]/30 hover:bg-[#FFF4EE]"
+                  href={`/blogs/${p.slug}`}
+                  className="group overflow-hidden rounded-xl border border-slate-200 bg-white/80 shadow-sm transition hover:border-[#FF5A14]/30 hover:bg-[#FFF4EE]"
                 >
-                  <div className="relative h-40">
+                  <div className="relative h-60">
                     <Image
                       src={p.heroImage}
                       alt={p.title}

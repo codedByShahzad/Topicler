@@ -33,15 +33,13 @@ const normalizeCategory = (category?: string) => {
 const categoryStyles: Record<string, string> = {
   "Topic Ideas": "border-[#dc2626]/25 bg-[#fef2f2] text-[#dc2626]",
 
-  "Content Ideas": "border-[#2563eb]/25 bg-[#eff6ff] text-[#2563eb]",
+  "": "border-[#2563eb]/25 bg-[#eff6ff] text-[#2563eb]",
 
   "Idea Generation": "border-[#92400e]/25 bg-[#fef3c7] text-[#92400e]",
 
-  "Content Creation": "border-[#7c3aed]/25 bg-[#f5f3ff] text-[#7c3aed]",
+  "Conversation": "border-[#7c3aed]/25 bg-[#f5f3ff] text-[#7c3aed]",
 
   "SEO & Content": "border-[#0891b2]/25 bg-[#ecfeff] text-[#0891b2]",
-
-  "Writing & Ideas": "border-[#16a34a]/25 bg-[#f0fdf4] text-[#16a34a]",
 
   "Productivity": "border-[#c026d3]/25 bg-[#fdf4ff] text-[#c026d3]",
 
@@ -76,7 +74,7 @@ export default function BlogCard({
   const normalizedCategory = normalizeCategory(category);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.045)] transition-all duration-300 hover:-translate-y-1 hover:border-[#FF5A14] hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.045)] transition-all duration-300 hover:-translate-y-1 hover:border-[#FF5A14] hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
       <Link href={`/blogs/${slug}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
           <Image

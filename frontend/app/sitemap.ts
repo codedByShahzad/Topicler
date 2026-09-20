@@ -14,12 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${SITE_URL}/tools/random-topic-generator/`,
-      lastModified: "2026-09-19",
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
       url: `${SITE_URL}/blogs/`,
       lastModified: "2026-09-19",
       changeFrequency: "weekly",

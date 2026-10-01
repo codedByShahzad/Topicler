@@ -4,29 +4,42 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 
 type TocClientProps = {
-  sections: { id: string; title: string }[];
+  sections?: { id: string; title: string }[];
   publishDate?: string;
   readingTime?: string;
 };
 
 export default function TocClient({
-  sections,
+  sections = [],
   publishDate,
   readingTime,
 }: TocClientProps) {
-  const [activeId, setActiveId] = useState<string>(sections?.[0]?.id ?? "");
+  const [activeId, setActiveId] = useState<string>(
+    sections?.[0]?.id ?? ""
+  );
+
   const navRef = useRef<HTMLElement | null>(null);
 
-  const ids = useMemo(() => sections.map((s) => s.id), [sections]);
+  const ids = useMemo(
+    () => sections.map((s) => s.id),
+    [sections]
+  );
 
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
+
     if (!el) return;
 
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
 
-    if (history.replaceState) history.replaceState(null, "", `#${id}`);
-    else window.location.hash = id;
+    if (history.replaceState) {
+      history.replaceState(null, "", `#${id}`);
+    } else {
+      window.location.hash = id;
+    }
 
     setActiveId(id);
   };
@@ -44,9 +57,16 @@ export default function TocClient({
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+          .sort(
+            (a, b) =>
+              (b.intersectionRatio ?? 0) -
+              (a.intersectionRatio ?? 0)
+          );
 
-        const nextId = (visible[0]?.target as HTMLElement | undefined)?.id;
+        const nextId = (
+          visible[0]?.target as HTMLElement | undefined
+        )?.id;
+
         if (nextId) setActiveId(nextId);
       },
       {
@@ -57,6 +77,7 @@ export default function TocClient({
     );
 
     elements.forEach((el) => observer.observe(el));
+
     return () => observer.disconnect();
   }, [ids]);
 
@@ -66,24 +87,27 @@ export default function TocClient({
         <div className="flex flex-col gap-3 text-sm text-slate-700">
           <div className="flex items-center justify-between gap-2">
             <div className="flex gap-2">
-            <CalendarDays className="h-4 w-4 shrink-0 text-[#FF5A14]" />
-            Publish Date :
+              <CalendarDays className="h-4 w-4 shrink-0 text-[#FF5A14]" />
+              Publish Date :
             </div>
+
             <span>{publishDate || "No publish date"}</span>
           </div>
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex gap-2">
-            <Clock className="h-4 w-4 shrink-0 text-[#FF5A14]" />
-            Read Time : 
+              <Clock className="h-4 w-4 shrink-0 text-[#FF5A14]" />
+              Read Time :
             </div>
+
             <span>{readingTime || "No reading time"}</span>
           </div>
         </div>
       </div>
+
       <h3 className="text-sm font-semibold text-slate-900">
-                  Table of contents
-                </h3>
+        Table of contents
+      </h3>
 
       <nav
         ref={navRef}
@@ -115,6 +139,7 @@ export default function TocClient({
                       : "bg-slate-200 group-hover:bg-[#FF5A14]/60",
                   ].join(" ")}
                 />
+
                 <span className="line-clamp-1">{s.title}</span>
               </span>
 

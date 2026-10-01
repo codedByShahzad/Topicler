@@ -1,7 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, Clock, ArrowUpRight } from "lucide-react";
+import {
+  CalendarDays,
+  Clock,
+  ArrowUpRight,
+} from "lucide-react";
 import type { StaticImageData } from "next/image";
+
+/* -------------------------------------------------------------------------- */
+/*                                  TYPES                                     */
+/* -------------------------------------------------------------------------- */
 
 type BlogCardProps = {
   slug: string;
@@ -10,56 +18,174 @@ type BlogCardProps = {
   heroImage: string | StaticImageData;
   category: string;
   publishDate: string;
-  readingTime: string;
+  readingTime?: string;
   priority?: boolean;
 };
-const normalizeCategory = (category?: string) => {
+
+/* -------------------------------------------------------------------------- */
+/*                              DATE HELPERS                                  */
+/* -------------------------------------------------------------------------- */
+
+function formatDate(dateString?: string) {
+  if (!dateString) {
+    return "";
+  }
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              IMAGE HELPERS                                 */
+/* -------------------------------------------------------------------------- */
+
+function optimizeImage(
+  image: string | StaticImageData
+): string | StaticImageData {
+  if (typeof image !== "string") {
+    return image;
+  }
+
+  if (
+    !image.includes("res.cloudinary.com") ||
+    !image.includes("/image/upload/")
+  ) {
+    return image;
+  }
+
+  if (
+    image.includes("f_auto") ||
+    image.includes("q_auto")
+  ) {
+    return image;
+  }
+
+  return image.replace(
+    "/image/upload/",
+    "/image/upload/f_auto,q_auto,w_900/"
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              CATEGORY                                      */
+/* -------------------------------------------------------------------------- */
+
+const normalizeCategory = (
+  category?: string
+) => {
   if (!category) return "";
 
-  const value = category.trim().toLowerCase();
+  const value = category
+    .trim()
+    .toLowerCase();
 
-  if (value.includes("politic")) return "Politics";
-  if (value.includes("finance")) return "Finance";
-  if (value.includes("real estate")) return "Real Estate";
-  if (value.includes("technology") || value.includes("tech")) return "Technology";
-  if (value.includes("plumbing")) return "Plumbing";
-  if (value.includes("digital")) return "Digital Marketing";
-  if (value.includes("home")) return "Home Improvements";
-  if (value.includes("health")) return "Health";
+  if (value.includes("politic")) {
+    return "Politics";
+  }
+
+  if (value.includes("finance")) {
+    return "Finance";
+  }
+
+  if (value.includes("real estate")) {
+    return "Real Estate";
+  }
+
+  if (
+    value.includes("technology") ||
+    value.includes("tech")
+  ) {
+    return "Technology";
+  }
+
+  if (value.includes("plumbing")) {
+    return "Plumbing";
+  }
+
+  if (value.includes("digital")) {
+    return "Digital Marketing";
+  }
+
+  if (value.includes("home")) {
+    return "Home Improvements";
+  }
+
+  if (value.includes("health")) {
+    return "Health";
+  }
 
   return category.trim();
 };
 
-const categoryStyles: Record<string, string> = {
-  "Topic Ideas": "border-[#dc2626]/25 bg-[#fef2f2] text-[#dc2626]",
+/* -------------------------------------------------------------------------- */
+/*                            CATEGORY STYLES                                 */
+/* -------------------------------------------------------------------------- */
 
-  "": "border-[#2563eb]/25 bg-[#eff6ff] text-[#2563eb]",
+const categoryStyles: Record<
+  string,
+  string
+> = {
+  "Topic Ideas":
+    "border-red-200 bg-red-50 text-red-600",
 
-  "Idea Generation": "border-[#92400e]/25 bg-[#fef3c7] text-[#92400e]",
+  "":
+    "border-blue-200 bg-blue-50 text-blue-600",
 
-  "Conversation": "border-[#7c3aed]/25 bg-[#f5f3ff] text-[#7c3aed]",
+  "Idea Generation":
+    "border-amber-200 bg-amber-50 text-amber-700",
 
-  "SEO & Content": "border-[#0891b2]/25 bg-[#ecfeff] text-[#0891b2]",
+  Conversation:
+    "border-violet-200 bg-violet-50 text-violet-600",
 
-  "Productivity": "border-[#c026d3]/25 bg-[#fdf4ff] text-[#c026d3]",
+  "SEO & Content":
+    "border-cyan-200 bg-cyan-50 text-cyan-700",
 
-  "Topicler Guides": "border-[#0f766e]/25 bg-[#f0fdfa] text-[#0f766e]",
+  Productivity:
+    "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-600",
+
+  "Topicler Guides":
+    "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
-const CategoryPill = ({ category }: { category: string }) => {
-  const normalizedCategory = normalizeCategory(category);
+/* -------------------------------------------------------------------------- */
+/*                           CATEGORY PILL                                    */
+/* -------------------------------------------------------------------------- */
+
+function CategoryPill({
+  category,
+}: {
+  category: string;
+}) {
+  const normalizedCategory =
+    normalizeCategory(category);
 
   return (
     <span
-      className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-        categoryStyles[normalizedCategory] ||
-        "border-slate-200 bg-slate-50 text-slate-700"
+      className={`inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] shadow-sm backdrop-blur-md ${
+        categoryStyles[
+          normalizedCategory
+        ] ||
+        "border-white/40 bg-white/90 text-slate-700"
       }`}
     >
       {normalizedCategory}
     </span>
   );
-};
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              BLOG CARD                                     */
+/* -------------------------------------------------------------------------- */
 
 export default function BlogCard({
   slug,
@@ -71,66 +197,250 @@ export default function BlogCard({
   readingTime,
   priority = false,
 }: BlogCardProps) {
-  const normalizedCategory = normalizeCategory(category);
+  const normalizedCategory =
+    normalizeCategory(category);
+
+  const formattedDate =
+    formatDate(publishDate);
+
+  const optimizedImage =
+    optimizeImage(heroImage);
+
+  /*
+   * Solvix may not have readingTime on every existing blog.
+   * Always provide a readable fallback.
+   */
+  const formattedReadingTime =
+    readingTime?.trim() || "5 min read";
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.045)] transition-all duration-300 hover:-translate-y-1 hover:border-[#FF5A14] hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-      <Link href={`/blogs/${slug}`} className="block">
+    <article
+      className="
+        group relative flex h-full flex-col
+        overflow-hidden rounded-2xl
+        border border-slate-200/80
+        bg-white
+        shadow-[0_8px_30px_rgba(15,23,42,0.05)]
+        transition-all duration-300
+        hover:-translate-y-1
+        hover:border-[#FF5A14]/30
+        hover:shadow-[0_20px_50px_rgba(15,23,42,0.10)]
+      "
+    >
+      {/* ------------------------------------------------------------------ */}
+      {/* IMAGE                                                              */}
+      {/* ------------------------------------------------------------------ */}
+
+      <Link
+        href={`/blogs/${slug}`}
+        className="block"
+      >
         <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+
           <Image
-            src={heroImage}
+            src={optimizedImage}
             alt={title}
             fill
             priority={priority}
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="object-cover object-center transition duration-700 group-hover:scale-[1.05]"
+            quality={70}
+            sizes="
+              (max-width: 640px) 100vw,
+              (max-width: 1024px) 50vw,
+              33vw
+            "
+            className="
+              object-cover object-center
+              transition-transform duration-700
+              ease-out
+              group-hover:scale-[1.05]
+            "
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          {/* Image overlay */}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
+
+          {/* Category */}
 
           <div className="absolute left-4 top-4 z-10">
-            <CategoryPill category={normalizedCategory} />
+            <CategoryPill
+              category={normalizedCategory}
+            />
           </div>
+
+          {/* Bottom image glow */}
+
+          <div
+            className="
+              pointer-events-none absolute
+              bottom-0 left-0 right-0 h-24
+              bg-gradient-to-t
+              from-black/20 to-transparent
+              opacity-80
+            "
+          />
         </div>
       </Link>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* CONTENT                                                            */}
+      {/* ------------------------------------------------------------------ */}
+
       <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-3 text-[12px] font-medium text-slate-500">
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarDays size={14} className="text-slate-400" />
-            {publishDate}
-          </span>
+
+        {/* ---------------------------------------------------------------- */}
+        {/* META                                                              */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-slate-500">
+
+          {/* DATE */}
+
+          {formattedDate && (
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays
+                size={14}
+                strokeWidth={1.8}
+                className="text-[#FF5A14]"
+              />
+
+              <span>
+                {formattedDate}
+              </span>
+            </span>
+          )}
+
+          {/* READING TIME */}
 
           <span className="inline-flex items-center gap-1.5">
-            <Clock size={14} className="text-slate-400" />
-            {readingTime}
+            <Clock
+              size={14}
+              strokeWidth={1.8}
+              className="text-[#FF5A14]"
+            />
+
+            <span>
+              {formattedReadingTime}
+            </span>
           </span>
         </div>
 
-        <Link href={`/blogs/${slug}`}>
-          <h2 className="text-[1.08rem] font-bold leading-snug text-[#0B1220] transition duration-300 group-hover:text-[#FF5A14] md:text-[1.22rem]">
+        {/* ---------------------------------------------------------------- */}
+        {/* TITLE                                                             */}
+        {/* ---------------------------------------------------------------- */}
+
+        <Link
+          href={`/blogs/${slug}`}
+          className="block"
+        >
+          <h2
+            className="
+              line-clamp-2
+              text-[1.08rem]
+              font-bold
+              leading-snug
+              tracking-[-0.01em]
+              text-[#0B1220]
+              transition-colors
+              duration-300
+              group-hover:text-[#FF5A14]
+              md:text-[1.2rem]
+            "
+          >
             {title}
           </h2>
         </Link>
 
-        <p className="mt-3 line-clamp-3 text-[14px] leading-7 text-slate-600">
+        {/* ---------------------------------------------------------------- */}
+        {/* DESCRIPTION                                                       */}
+        {/* ---------------------------------------------------------------- */}
+
+        <p
+          className="
+            mt-3
+            line-clamp-3
+            text-[14px]
+            leading-7
+            text-slate-600
+          "
+        >
           {subtitle}
         </p>
 
-        <div className="mt-auto pt-5">
+        {/* ---------------------------------------------------------------- */}
+        {/* FOOTER                                                            */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div
+          className="
+            mt-auto
+            flex items-center
+            justify-between
+            border-t border-slate-100
+            pt-5
+            mt-6
+          "
+        >
           <Link
             href={`/blogs/${slug}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#FF5A14] transition-all duration-200 group-hover:gap-3"
+            className="
+              inline-flex
+              items-center
+              gap-2
+              text-sm
+              font-semibold
+              text-[#FF5A14]
+              transition-all
+              duration-300
+              group-hover:gap-3
+            "
           >
             Read article
-            <ArrowUpRight size={16} />
+
           </Link>
+
+          {/* Small visual indicator */}
+
+          <span
+            className="
+              flex h-8 w-8
+              items-center justify-center
+              rounded-full
+              bg-[#FFF4EE]
+              text-[#FF5A14]
+              transition-all
+              duration-300
+              group-hover:bg-[#FF5A14]
+              group-hover:text-white
+            "
+          >
+            <ArrowUpRight
+              size={14}
+              className="
+                transition-transform
+                duration-300
+                group-hover:translate-x-0.5
+                group-hover:-translate-y-0.5
+              "
+            />
+          </span>
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 rounded-[24px] opacity-0 transition duration-300 group-hover:opacity-100">
-        <div className="absolute inset-0 rounded-[24px] bg-gradient-to-r from-[#FF5A14]/[0.04] via-transparent to-[#FF5A14]/[0.04]" />
-      </div>
+      {/* ------------------------------------------------------------------ */}
+      {/* SUBTLE HOVER BORDER                                                */}
+      {/* ------------------------------------------------------------------ */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute inset-0
+          rounded-2xl
+          border border-[#FF5A14]/0
+          transition-all duration-300
+          group-hover:border-[#FF5A14]/10
+        "
+      />
     </article>
   );
 }

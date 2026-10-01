@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/app/layout";
-import { Suspense } from "react";
 import BlogListClient from "./BlogListClient";
+import { getSolvixBlogs } from "@/src/lib/solvix";
 
-// `absolute` bypasses the "%s | Topicler" template because this title already
-// contains the brand. Without it you would get "... Blog | Topicler".
 export const metadata: Metadata = {
-  title: { absolute: "Topic Ideas & Writing Prompts — The Topicler Blog" },
+  title: {
+    absolute: "Topic Ideas & Writing Prompts — The Topicler Blog",
+  },
 
   description:
     "Curated topic lists, writing prompts and idea guides for students, " +
     "speakers, writers and content creators — plus how to use topic " +
     "generators well.",
 
-  // FIXED: was "/blog", which is not the listing route.
-  alternates: { canonical: "/blogs/" },
+  alternates: {
+    canonical: "/blogs/",
+  },
 
   openGraph: {
     type: "website",
-    url: `${SITE_URL}/blogs/`,   // FIXED: was https://topicler.com/blog
+    url: `${SITE_URL}/blogs/`,
     title: "Topic Ideas & Writing Prompts — The Topicler Blog",
     description:
       "Curated topic lists, writing prompts and idea guides for students, " +
@@ -33,14 +34,8 @@ export const metadata: Metadata = {
   },
 };
 
-function BlogPageFallback() {
-  return <div>Loading...</div>;
-}
+export default async function BlogPage() {
+  const blogs = await getSolvixBlogs();
 
-export default function BlogPage() {
-  return (
-    <Suspense fallback={<BlogPageFallback />}>
-      <BlogListClient />
-    </Suspense>
-  );
+  return <BlogListClient blogs={blogs} />;
 }

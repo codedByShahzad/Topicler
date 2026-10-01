@@ -1,21 +1,27 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
-
-import { BLOGS } from "../../src/lib/blog";
+import {
+  Search,
+  X,
+  CalendarDays,
+  Clock,
+} from "lucide-react";
 import BlogCard from "@/src/components/BlogCard";
 
-type Blog = (typeof BLOGS)[number];
+type Blog = {
+  _id?: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  heroImage: string;
+  category: string;
+  publishDate: string;
+  readingTime: string;
+};
 
 const ALL_CATEGORIES = "All";
 
@@ -72,7 +78,7 @@ function Reveal({
           io.disconnect();
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
     );
 
     io.observe(el);
@@ -103,6 +109,42 @@ function formatReadingTime(value?: string | number) {
   return typeof value === "number" ? `${value} min read` : value;
 }
 
+function formatPublishDate(value?: string) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+function optimizeCloudinaryImage(image?: string) {
+  if (!image) {
+    return "";
+  }
+
+  if (
+    !image.includes("res.cloudinary.com") ||
+    !image.includes("/image/upload/")
+  ) {
+    return image;
+  }
+
+  if (image.includes("f_auto") || image.includes("q_auto")) {
+    return image;
+  }
+
+  return image.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1600/");
+}
+
 /* ==========================================================================
    Featured lead article
 
@@ -113,9 +155,15 @@ function formatReadingTime(value?: string | number) {
 function FeaturedArticle({ blog }: { blog: Blog }) {
   const reading = formatReadingTime(blog.readingTime);
 
+  const formattedDate = formatPublishDate(blog.publishDate);
+
+  const optimizedHeroImage = optimizeCloudinaryImage(blog.heroImage);
+
   return (
     <article className="group">
-      <h1 className="text-2xl font-bold tracking-[-0.02em] text-[#0B1220] mb-2 lg:mb-6">Latest Article</h1>
+      <h1 className="text-2xl font-bold tracking-[-0.02em] text-[#0B1220] mb-2 lg:mb-6">
+        Latest Article
+      </h1>
       <Link
         href={`/blogs/${blog.slug}`}
         className="grid overflow-hidden rounded-xl border border-[#E8EBF0] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#FFD5C2] hover:shadow-[0_28px_70px_-40px_rgba(11,18,32,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5A14] focus-visible:ring-offset-2 lg:grid-cols-[1.15fr_1fr]"
@@ -123,11 +171,12 @@ function FeaturedArticle({ blog }: { blog: Blog }) {
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#FFF4EE] lg:aspect-auto lg:min-h-[420px]">
           {blog.heroImage ? (
             <Image
-              src={blog.heroImage}
-              alt=""
+              src={optimizedHeroImage}
+              alt={blog.title}
               fill
-              sizes="(max-width: 1023px) 100vw, 55vw"
               priority
+              quality={75}
+              sizes="(max-width: 1023px) 100vw, 55vw"
               className="object-cover transition-transform duration-[700ms] ease-out group-hover:scale-[1.03]"
             />
           ) : (
@@ -155,13 +204,27 @@ function FeaturedArticle({ blog }: { blog: Blog }) {
             </p>
           )}
 
-          <div className="mt-7 flex items-center gap-3 text-sm text-slate-500">
-            {blog.publishDate && <span>{blog.publishDate}</span>}
-            {blog.publishDate && reading && (
-              <span aria-hidden className="h-3 w-px bg-slate-200" />
-            )}
-            {reading && <span>{reading}</span>}
-          </div>
+<div className="mt-7 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+  {formattedDate && (
+    <span className="inline-flex items-center gap-1.5">
+      <CalendarDays
+        size={16}
+        className="text-[#FF5A14]"
+      />
+      {formattedDate}
+    </span>
+  )}
+
+  {reading && (
+    <span className="inline-flex items-center gap-1.5">
+      <Clock
+        size={16}
+        className="text-[#FF5A14]"
+      />
+      {reading}
+    </span>
+  )}
+</div>
 
           <span className="mt-7 inline-flex w-fit items-center rounded-full bg-[#0B1220] px-5 py-3 text-sm font-semibold text-white transition-colors duration-300 group-hover:bg-[#FF5A14]">
             Read this article
@@ -214,7 +277,7 @@ function EmptyState({
    Blog listing
    ========================================================================== */
 
-export default function BlogListClient() {
+export default function BlogListClient({ blogs }: { blogs: Blog[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -253,14 +316,21 @@ export default function BlogListClient() {
 
   const categories = useMemo(() => {
     const found = new Set<string>();
-    for (const blog of BLOGS) if (blog.category) found.add(blog.category);
-    return [ALL_CATEGORIES, ...Array.from(found).sort((a, b) => a.localeCompare(b))];
-  }, []);
+
+    for (const blog of blogs) {
+      if (blog.category) found.add(blog.category);
+    }
+
+    return [
+      ALL_CATEGORIES,
+      ...Array.from(found).sort((a, b) => a.localeCompare(b)),
+    ];
+  }, [blogs]);
 
   const filteredBlogs = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    return BLOGS.filter((blog) => {
+    return blogs.filter((blog) => {
       if (category !== ALL_CATEGORIES && blog.category !== category) {
         return false;
       }
@@ -274,15 +344,15 @@ export default function BlogListClient() {
         title.includes(q) || subtitle.includes(q) || blogCategory.includes(q)
       );
     });
-  }, [query, category]);
+  }, [blogs, query, category]);
 
-const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
+  const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
 
-const orderedBlogs = [...filteredBlogs].reverse();
+  const orderedBlogs = [...filteredBlogs].reverse();
 
-const [lead, ...rest] = orderedBlogs;
+  const [lead, ...rest] = orderedBlogs;
 
-const gridItems = isFiltering ? orderedBlogs : rest;
+  const gridItems = isFiltering ? orderedBlogs : rest;
 
   const resetFilters = () => {
     setQuery("");
@@ -298,7 +368,7 @@ const gridItems = isFiltering ? orderedBlogs : rest;
           JavaScript to become visible.
       ========================================================= */}
       <header className="border-b border-[#E8EBF0] bg-[#FFF4EE]">
-                {/* Hero Content */}
+        {/* Hero Content */}
         <div className="relative mx-auto max-w-360 px-5 py-6 text-center sm:py-20 lg:px-8 lg:py-14">
           {/* Eyebrow */}
           <div className="flex justify-center">
@@ -309,16 +379,12 @@ const gridItems = isFiltering ? orderedBlogs : rest;
                 width={18}
                 height={18}
               />
-
             </div>
           </div>
 
           {/* Heading — KEPT EXACTLY THE SAME */}
           <h1 className="mx-auto mt-4 max-w-4xl text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-[#0B1220] sm:text-5xl lg:text-[58px]">
-            Explore our{" "}
-            <span className="text-[#FF5A14]">
-              resources
-            </span>
+            Explore our <span className="text-[#FF5A14]">resources</span>
           </h1>
 
           {/* Description */}
@@ -327,7 +393,6 @@ const gridItems = isFiltering ? orderedBlogs : rest;
             get more from Topicler&apos;s tools.
           </p>
         </div>
-
       </header>
 
       {/* =========================================================
@@ -366,7 +431,7 @@ const gridItems = isFiltering ? orderedBlogs : rest;
             aria-live="polite"
             className="hidden shrink-0 text-sm text-slate-500 sm:block"
           >
-            {filteredBlogs.length} of {BLOGS.length}
+            {filteredBlogs.length} of {blogs.length}
           </p>
         </div>
       </div>
@@ -408,7 +473,7 @@ const gridItems = isFiltering ? orderedBlogs : rest;
                       category={blog.category}
                       publishDate={blog.publishDate}
                       readingTime={blog.readingTime}
-                      priority={index < 3}
+                      priority={index === 0}
                     />
                   </Reveal>
                 ))}
@@ -416,8 +481,6 @@ const gridItems = isFiltering ? orderedBlogs : rest;
             </section>
           </>
         )}
-
-
       </main>
     </div>
   );

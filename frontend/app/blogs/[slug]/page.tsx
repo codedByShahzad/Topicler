@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
@@ -154,6 +155,20 @@ type SolvixBlog = {
   ogImage?: string;
 
   sections?: SolvixSection[];
+
+  /**
+   * Rich-text editor document (Tiptap / ProseMirror JSON) and the table of
+   * contents built from its H2/H3 headings. Present for posts saved with the
+   * Solvix rich-text editor; older posts only have `sections`.
+   */
+  contentJson?: unknown;
+  toc?: SolvixTocEntry[];
+};
+
+type SolvixTocEntry = {
+  id: string;
+  title: string;
+  level?: number;
 };
 
 type SolvixSection = {
@@ -691,6 +706,283 @@ if (block.type === "p") {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                     RICH-TEXT CONTENT (Solvix editor)                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * `sections` is only a plain-text copy of the article: every list arrives as
+ * type "list" (numbered lists became bullets), H3s and quotes become
+ * paragraphs, and bold / italic / underline / links are dropped. Posts written
+ * with the Solvix rich-text editor also carry `contentJson` (the real document)
+ * and `toc`, so those are rendered from the document instead.
+ *
+ * The document is turned into React elements — never injected as HTML — so
+ * all text is escaped by React and only the node and mark types handled
+ * below can appear. Anything unknown is skipped (its text is kept).
+ */
+
+type RichMark = {
+  type?: string;
+  attrs?: Record<string, unknown>;
+};
+
+type RichNode = {
+  type?: string;
+  attrs?: Record<string, unknown>;
+  content?: RichNode[];
+  text?: string;
+  marks?: RichMark[];
+};
+
+type RichContent = {
+  nodes: RichNode[];
+  toc: SolvixTocEntry[];
+};
+
+const RICH_P_CLASS = "text-base leading-8 text-slate-600";
+
+function isRichNode(value: unknown): value is RichNode {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    typeof (value as RichNode).type === "string"
+  );
+}
+
+function richChildren(node: RichNode): RichNode[] {
+  return Array.isArray(node.content)
+    ? node.content.filter(isRichNode)
+    : [];
+}
+
+/** Visible text of a node (same rule Solvix uses to build the TOC). */
+function richText(node: RichNode): string {
+  if (node.type === "text") return typeof node.text === "string" ? node.text : "";
+  if (node.type === "hardBreak") return " ";
+  return richChildren(node).map(richText).join("");
+}
+
+/** The editor document + TOC, or null to fall back to `sections`. */
+function getRichContent(blog: SolvixBlog): RichContent | null {
+  const doc = blog.contentJson as { type?: unknown; content?: unknown } | null | undefined;
+
+  if (
+    !doc ||
+    typeof doc !== "object" ||
+    doc.type !== "doc" ||
+    !Array.isArray(doc.content) ||
+    !Array.isArray(blog.toc)
+  ) {
+    return null;
+  }
+
+  const nodes = doc.content.filter(isRichNode);
+  if (!nodes.length) return null;
+
+  return {
+    nodes,
+    toc: blog.toc.filter(
+      (entry) =>
+        !!entry &&
+        typeof entry.id === "string" &&
+        typeof entry.title === "string"
+    ),
+  };
+}
+
+/** http(s), mailto, site paths ("/x", not "//host") and #anchors only. */
+function safeHref(href: unknown): string | null {
+  if (typeof href !== "string") return null;
+  const value = href.trim();
+  if (!value || /[\s\u0000-\u001f\u007f]/.test(value)) return null;
+  return /^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(value) ? value : null;
+}
+
+function renderRichInline(nodes: RichNode[], keyPrefix: string): ReactNode[] {
+  return nodes.map((node, index) => {
+    const key = `${keyPrefix}-${index}`;
+
+    if (node.type === "hardBreak") return <br key={key} />;
+
+    if (node.type !== "text") {
+      // Unknown inline wrapper: keep whatever text it contains.
+      return <Fragment key={key}>{renderRichInline(richChildren(node), key)}</Fragment>;
+    }
+
+    if (typeof node.text !== "string" || !node.text) return null;
+
+    const marks = Array.isArray(node.marks) ? node.marks : [];
+    const has = (type: string) => marks.some((mark) => mark?.type === type);
+
+    let element: ReactNode = node.text;
+    if (has("strike")) element = <s>{element}</s>;
+    if (has("underline")) element = <u className="underline-offset-2">{element}</u>;
+    if (has("italic")) element = <em>{element}</em>;
+    if (has("bold")) element = <strong className="font-semibold text-slate-800">{element}</strong>;
+    if (has("highlight")) element = <mark className="rounded bg-[#FFE7DA] px-0.5 text-inherit">{element}</mark>;
+
+    const href = safeHref(marks.find((mark) => mark?.type === "link")?.attrs?.href);
+    if (href) {
+      const external = /^https?:\/\//i.test(href);
+      element = (
+        <a
+          href={href}
+          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          className="text-[#FF5A14] underline underline-offset-2 hover:text-[#C63D08]"
+        >
+          {element}
+        </a>
+      );
+    }
+
+    return <Fragment key={key}>{element}</Fragment>;
+  });
+}
+
+function renderRichListItems(list: RichNode, keyPrefix: string): ReactNode[] {
+  return richChildren(list).map((item, index) => {
+    const key = `${keyPrefix}-${index}`;
+    const children = richChildren(item);
+
+    // Simple item: just its text. Otherwise: paragraphs and nested lists.
+    if (children.length === 1 && children[0].type === "paragraph") {
+      return <li key={key}>{renderRichInline(richChildren(children[0]), key)}</li>;
+    }
+
+    return (
+      <li key={key}>
+        <div className="space-y-3">{renderRichBlocks(children, key, "leading-7")}</div>
+      </li>
+    );
+  });
+}
+
+function renderRichBlocks(
+  nodes: RichNode[],
+  keyPrefix: string,
+  paragraphClass: string = RICH_P_CLASS,
+  headingIds?: Map<number, string>
+): ReactNode[] {
+  return nodes.map((node, index) => {
+    const key = `${keyPrefix}-${index}`;
+
+    switch (node.type) {
+      case "paragraph":
+        if (!richText(node).trim()) return null;
+        return (
+          <p key={key} className={paragraphClass}>
+            {renderRichInline(richChildren(node), key)}
+          </p>
+        );
+
+      case "heading": {
+        if (!richText(node).trim()) return null;
+        const id = headingIds?.get(index);
+        const level = Number(node.attrs?.level);
+
+        if (level >= 3) {
+          return (
+            <h3
+              key={key}
+              id={id}
+              className="scroll-mt-24 pt-3 text-lg font-semibold leading-7 text-slate-900 md:text-xl"
+            >
+              {renderRichInline(richChildren(node), key)}
+            </h3>
+          );
+        }
+
+        return (
+          <h2
+            key={key}
+            id={id}
+            className="scroll-mt-24 pt-5 text-xl font-semibold tracking-tight text-slate-900 first:pt-0 md:text-2xl"
+          >
+            {renderRichInline(richChildren(node), key)}
+          </h2>
+        );
+      }
+
+      case "bulletList":
+        return (
+          <ul key={key} className="list-disc space-y-3 pl-6 text-base leading-7 text-slate-600">
+            {renderRichListItems(node, key)}
+          </ul>
+        );
+
+      case "orderedList": {
+        const start = Math.floor(Number(node.attrs?.start));
+        return (
+          <ol
+            key={key}
+            start={start > 1 ? start : undefined}
+            className="list-decimal space-y-3 pl-6 text-base leading-7 text-slate-600"
+          >
+            {renderRichListItems(node, key)}
+          </ol>
+        );
+      }
+
+      case "blockquote":
+        return (
+          <blockquote
+            key={key}
+            className="space-y-3 rounded-2xl border border-[#FF5A14]/20 bg-[#FFF4EE] p-5 text-slate-700"
+          >
+            {renderRichBlocks(richChildren(node), key, "leading-8")}
+          </blockquote>
+        );
+
+      case "horizontalRule":
+        return <hr key={key} className="border-slate-200" />;
+
+      case "image": {
+        const src = typeof node.attrs?.src === "string" ? node.attrs.src.trim() : "";
+        if (!/^https:\/\/[^\s"'<>]+$/i.test(src)) return null;
+        const alt = typeof node.attrs?.alt === "string" ? node.attrs.alt : "";
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={key}
+            src={src}
+            alt={alt}
+            loading="lazy"
+            className="w-full rounded-2xl border border-slate-200"
+          />
+        );
+      }
+
+      default:
+        // Unknown block: render its children so no text is lost.
+        return (
+          <Fragment key={key}>
+            {renderRichBlocks(richChildren(node), key, paragraphClass)}
+          </Fragment>
+        );
+    }
+  });
+}
+
+function RichContentRenderer({ content }: { content: RichContent }) {
+  // Solvix builds `toc` from the non-empty top-level H2/H3 headings in
+  // document order, so the n-th such heading gets the n-th TOC id.
+  const headingIds = new Map<number, string>();
+  let tocIndex = 0;
+
+  content.nodes.forEach((node, index) => {
+    if (node.type !== "heading" || !richText(node).trim()) return;
+    const entry = content.toc[tocIndex++];
+    if (entry) headingIds.set(index, entry.id);
+  });
+
+  return (
+    <div className="space-y-5">
+      {renderRichBlocks(content.nodes, "rich", RICH_P_CLASS, headingIds)}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /*                           BLOG DETAIL PAGE                                */
 /* -------------------------------------------------------------------------- */
 
@@ -719,6 +1011,10 @@ export default async function BlogDetailPage({
 
   const blog =
     convertBlog(solvixBlog);
+
+  // Rich-text posts render from the editor document; older posts from sections.
+  const richContent =
+    getRichContent(solvixBlog);
 
   /* ---------------------------------------------------------------------- */
   /*                         RELATED POSTS                                  */
@@ -749,13 +1045,19 @@ export default async function BlogDetailPage({
       .slice(0, 6)
       .map(convertBlog);
 
-  const tocSections =
-    blog.sections.map(
-      (section) => ({
-        id: section.id,
-        title: section.title,
-      })
-    );
+  const tocSections = richContent
+    ? richContent.toc
+        .filter((entry) => (entry.level ?? 2) === 2)
+        .map((entry) => ({
+          id: entry.id,
+          title: entry.title,
+        }))
+    : blog.sections.map(
+        (section) => ({
+          id: section.id,
+          title: section.title,
+        })
+      );
 
   const publishedTime =
     blog.publishISO ??
@@ -994,22 +1296,28 @@ export default async function BlogDetailPage({
 
               <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm sm:p-6 md:p-8">
 
-                <div className="space-y-10">
+                {richContent ? (
+                  <RichContentRenderer
+                    content={richContent}
+                  />
+                ) : (
+                  <div className="space-y-10">
 
-                  {blog.sections.map(
-                    (section) => (
-                      <SectionRenderer
-                        key={
-                          section.id
-                        }
-                        section={
-                          section
-                        }
-                      />
-                    )
-                  )}
+                    {blog.sections.map(
+                      (section) => (
+                        <SectionRenderer
+                          key={
+                            section.id
+                          }
+                          section={
+                            section
+                          }
+                        />
+                      )
+                    )}
 
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -1,3 +1,181 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Blog article typography (app/blogs/[slug]/page.tsx)
 
+   Scoped to `.topicler-prose`, so nothing outside the article body changes.
+   Text stays left-aligned at a comfortable reading width (~70 characters),
+   on one spacing rhythm. Only elements the Solvix content renderer produces
+   are styled: paragraphs, H2, H3, lists, links, bold/italic/underline/strike,
+   highlight, quotes, dividers and images.
+   ========================================================================== */
+
+@layer components {
+  .topicler-prose {
+    max-width: 44rem;
+    margin-inline: auto;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #334155;
+    overflow-wrap: break-word;
+  }
+
+  @media (min-width: 640px) {
+    .topicler-prose {
+      font-size: 1.0625rem;
+    }
+  }
+
+  /* Vertical rhythm: one gap between blocks, wider before sections */
+  .topicler-prose > * + *,
+  .topicler-prose > section > * + * {
+    margin-top: 1.25rem;
+  }
+
+  .topicler-prose > section + section {
+    margin-top: 2.75rem;
+  }
+
+  /* Headings */
+  .topicler-prose h2 {
+    margin-top: 2.75rem;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: #0b1220;
+    scroll-margin-top: 6rem;
+  }
+
+  .topicler-prose h3 {
+    margin-top: 2rem;
+    font-size: 1.1875rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #0b1220;
+    scroll-margin-top: 6rem;
+  }
+
+  @media (min-width: 768px) {
+    .topicler-prose h2 {
+      font-size: 1.625rem;
+    }
+
+    .topicler-prose h3 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .topicler-prose :is(h2, h3) + * {
+    margin-top: 0.75rem;
+  }
+
+  .topicler-prose > :first-child,
+  .topicler-prose > section > :first-child {
+    margin-top: 0;
+  }
+
+  /* Lists */
+  .topicler-prose ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+
+  .topicler-prose ol {
+    list-style: decimal;
+    padding-left: 1.75rem;
+  }
+
+  .topicler-prose li {
+    padding-left: 0.25rem;
+  }
+
+  .topicler-prose li + li,
+  .topicler-prose li > * + * {
+    margin-top: 0.5rem;
+  }
+
+  .topicler-prose ul > li::marker {
+    color: #ff5a14;
+  }
+
+  .topicler-prose ol > li::marker {
+    color: #c63d08;
+    font-weight: 600;
+  }
+
+  /* Inline formatting */
+  .topicler-prose strong {
+    font-weight: 600;
+    color: #0b1220;
+  }
+
+  .topicler-prose u {
+    text-underline-offset: 3px;
+  }
+
+  .topicler-prose s {
+    color: #64748b;
+  }
+
+  .topicler-prose mark {
+    border-radius: 0.25rem;
+    background: #ffe7da;
+    padding: 0 0.15em;
+    color: inherit;
+  }
+
+  .topicler-prose a {
+    font-weight: 500;
+    color: #c63d08;
+    text-decoration: underline;
+    text-decoration-color: rgb(255 90 20 / 0.45);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+      color 150ms,
+      text-decoration-color 150ms;
+  }
+
+  .topicler-prose a:hover {
+    color: #ff5a14;
+    text-decoration-color: currentColor;
+  }
+
+  .topicler-prose a:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid #ff5a14;
+    outline-offset: 2px;
+  }
+
+  /* Blocks */
+  .topicler-prose blockquote {
+    margin-block: 1.75rem;
+    border-left: 4px solid #ff5a14;
+    border-radius: 0 1rem 1rem 0;
+    background: #fff4ee;
+    padding: 1rem 1.25rem;
+    font-style: italic;
+    color: #334155;
+  }
+
+  .topicler-prose blockquote > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .topicler-prose hr {
+    margin-block: 2.5rem;
+    border: 0;
+    border-top: 1px solid #e8ebf0;
+  }
+
+  .topicler-prose img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-block: 1.75rem;
+    border: 1px solid #e8ebf0;
+    border-radius: 1rem;
+  }
+}

@@ -587,12 +587,11 @@ function SectionRenderer({
       id={section.id}
       className="scroll-mt-24"
     >
-      <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+      <h2>
         {section.title}
       </h2>
 
-      <div className="mt-5 space-y-5">
-        {section.content.map(
+      {section.content.map(
           (
             block: BlogBlock,
             idx: number
@@ -605,7 +604,6 @@ if (block.type === "p") {
     return (
       <p
         key={idx}
-        className="text-base leading-8 text-slate-600"
       >
         {block.content.map((part, partIndex) =>
           part.type === "link" ? (
@@ -614,7 +612,6 @@ if (block.type === "p") {
               href={part.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#FF5A14] underline underline-offset-2 hover:text-[#C63D08]"
             >
               {part.text}
             </Link>
@@ -632,7 +629,6 @@ if (block.type === "p") {
   return (
     <p
       key={idx}
-      className="text-base leading-8 text-slate-600"
     >
       {block.text}
     </p>
@@ -647,7 +643,6 @@ if (block.type === "p") {
               return (
                 <h3
                   key={idx}
-                  className="pt-3 text-lg font-semibold leading-7 text-slate-900 md:text-xl"
                 >
                   {block.text}
                 </h3>
@@ -663,7 +658,6 @@ if (block.type === "p") {
               return (
                 <ul
                   key={idx}
-                  className="list-disc space-y-3 pl-6 text-base leading-7 text-slate-600"
                 >
                   {block.items.map(
                     (
@@ -688,9 +682,8 @@ if (block.type === "p") {
               return (
                 <blockquote
                   key={idx}
-                  className="rounded-2xl border border-[#FF5A14]/20 bg-[#FFF4EE] p-5 text-slate-700"
                 >
-                  <p className="leading-8">
+                  <p>
                     {block.text}
                   </p>
                 </blockquote>
@@ -700,7 +693,6 @@ if (block.type === "p") {
             return null;
           }
         )}
-      </div>
     </section>
   );
 }
@@ -738,8 +730,6 @@ type RichContent = {
   nodes: RichNode[];
   toc: SolvixTocEntry[];
 };
-
-const RICH_P_CLASS = "text-base leading-8 text-slate-600";
 
 function isRichNode(value: unknown): value is RichNode {
   return (
@@ -816,10 +806,10 @@ function renderRichInline(nodes: RichNode[], keyPrefix: string): ReactNode[] {
 
     let element: ReactNode = node.text;
     if (has("strike")) element = <s>{element}</s>;
-    if (has("underline")) element = <u className="underline-offset-2">{element}</u>;
+    if (has("underline")) element = <u>{element}</u>;
     if (has("italic")) element = <em>{element}</em>;
-    if (has("bold")) element = <strong className="font-semibold text-slate-800">{element}</strong>;
-    if (has("highlight")) element = <mark className="rounded bg-[#FFE7DA] px-0.5 text-inherit">{element}</mark>;
+    if (has("bold")) element = <strong>{element}</strong>;
+    if (has("highlight")) element = <mark>{element}</mark>;
 
     const href = safeHref(marks.find((mark) => mark?.type === "link")?.attrs?.href);
     if (href) {
@@ -828,7 +818,6 @@ function renderRichInline(nodes: RichNode[], keyPrefix: string): ReactNode[] {
         <a
           href={href}
           {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          className="text-[#FF5A14] underline underline-offset-2 hover:text-[#C63D08]"
         >
           {element}
         </a>
@@ -849,18 +838,13 @@ function renderRichListItems(list: RichNode, keyPrefix: string): ReactNode[] {
       return <li key={key}>{renderRichInline(richChildren(children[0]), key)}</li>;
     }
 
-    return (
-      <li key={key}>
-        <div className="space-y-3">{renderRichBlocks(children, key, "leading-7")}</div>
-      </li>
-    );
+    return <li key={key}>{renderRichBlocks(children, key)}</li>;
   });
 }
 
 function renderRichBlocks(
   nodes: RichNode[],
   keyPrefix: string,
-  paragraphClass: string = RICH_P_CLASS,
   headingIds?: Map<number, string>
 ): ReactNode[] {
   return nodes.map((node, index) => {
@@ -869,11 +853,7 @@ function renderRichBlocks(
     switch (node.type) {
       case "paragraph":
         if (!richText(node).trim()) return null;
-        return (
-          <p key={key} className={paragraphClass}>
-            {renderRichInline(richChildren(node), key)}
-          </p>
-        );
+        return <p key={key}>{renderRichInline(richChildren(node), key)}</p>;
 
       case "heading": {
         if (!richText(node).trim()) return null;
@@ -882,59 +862,36 @@ function renderRichBlocks(
 
         if (level >= 3) {
           return (
-            <h3
-              key={key}
-              id={id}
-              className="scroll-mt-24 pt-3 text-lg font-semibold leading-7 text-slate-900 md:text-xl"
-            >
+            <h3 key={key} id={id}>
               {renderRichInline(richChildren(node), key)}
             </h3>
           );
         }
 
         return (
-          <h2
-            key={key}
-            id={id}
-            className="scroll-mt-24 pt-5 text-xl font-semibold tracking-tight text-slate-900 first:pt-0 md:text-2xl"
-          >
+          <h2 key={key} id={id}>
             {renderRichInline(richChildren(node), key)}
           </h2>
         );
       }
 
       case "bulletList":
-        return (
-          <ul key={key} className="list-disc space-y-3 pl-6 text-base leading-7 text-slate-600">
-            {renderRichListItems(node, key)}
-          </ul>
-        );
+        return <ul key={key}>{renderRichListItems(node, key)}</ul>;
 
       case "orderedList": {
         const start = Math.floor(Number(node.attrs?.start));
         return (
-          <ol
-            key={key}
-            start={start > 1 ? start : undefined}
-            className="list-decimal space-y-3 pl-6 text-base leading-7 text-slate-600"
-          >
+          <ol key={key} start={start > 1 ? start : undefined}>
             {renderRichListItems(node, key)}
           </ol>
         );
       }
 
       case "blockquote":
-        return (
-          <blockquote
-            key={key}
-            className="space-y-3 rounded-2xl border border-[#FF5A14]/20 bg-[#FFF4EE] p-5 text-slate-700"
-          >
-            {renderRichBlocks(richChildren(node), key, "leading-8")}
-          </blockquote>
-        );
+        return <blockquote key={key}>{renderRichBlocks(richChildren(node), key)}</blockquote>;
 
       case "horizontalRule":
-        return <hr key={key} className="border-slate-200" />;
+        return <hr key={key} />;
 
       case "image": {
         const src = typeof node.attrs?.src === "string" ? node.attrs.src.trim() : "";
@@ -942,13 +899,7 @@ function renderRichBlocks(
         const alt = typeof node.attrs?.alt === "string" ? node.attrs.alt : "";
         return (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={key}
-            src={src}
-            alt={alt}
-            loading="lazy"
-            className="w-full rounded-2xl border border-slate-200"
-          />
+          <img key={key} src={src} alt={alt} loading="lazy" />
         );
       }
 
@@ -956,7 +907,7 @@ function renderRichBlocks(
         // Unknown block: render its children so no text is lost.
         return (
           <Fragment key={key}>
-            {renderRichBlocks(richChildren(node), key, paragraphClass)}
+            {renderRichBlocks(richChildren(node), key)}
           </Fragment>
         );
     }
@@ -976,8 +927,8 @@ function RichContentRenderer({ content }: { content: RichContent }) {
   });
 
   return (
-    <div className="space-y-5">
-      {renderRichBlocks(content.nodes, "rich", RICH_P_CLASS, headingIds)}
+    <div className="topicler-prose">
+      {renderRichBlocks(content.nodes, "rich", headingIds)}
     </div>
   );
 }
@@ -1249,7 +1200,7 @@ export default async function BlogDetailPage({
 
               </div>
 
-              <h1 className="mt-3 max-w-5xl text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
+              <h1 className="mt-3 max-w-5xl text-balance text-[26px] font-bold leading-[1.15] tracking-[-0.02em] text-white sm:text-3xl md:text-[40px]">
 
                 {blog.title}
 
@@ -1294,14 +1245,14 @@ export default async function BlogDetailPage({
 
             <div className="lg:col-span-8">
 
-              <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm sm:p-6 md:p-8">
+              <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm sm:p-7 md:p-10 lg:px-12">
 
                 {richContent ? (
                   <RichContentRenderer
                     content={richContent}
                   />
                 ) : (
-                  <div className="space-y-10">
+                  <div className="topicler-prose">
 
                     {blog.sections.map(
                       (section) => (

@@ -348,11 +348,23 @@ export default function BlogListClient({ blogs }: { blogs: Blog[] }) {
 
   const isFiltering = Boolean(query.trim()) || category !== ALL_CATEGORIES;
 
-  const orderedBlogs = [...filteredBlogs].reverse();
+
+  const orderedBlogs = [...filteredBlogs].sort((a, b) => {
+    const dateA = Date.parse(a.publishDate);
+    const dateB = Date.parse(b.publishDate);
+
+    // Blogs with valid dates appear before blogs without valid dates.
+    if (Number.isNaN(dateA) && Number.isNaN(dateB)) return 0;
+    if (Number.isNaN(dateA)) return 1;
+    if (Number.isNaN(dateB)) return -1;
+
+    return dateB - dateA;
+  });
 
   const [lead, ...rest] = orderedBlogs;
 
   const gridItems = isFiltering ? orderedBlogs : rest;
+
 
   const resetFilters = () => {
     setQuery("");
